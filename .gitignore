@@ -1,0 +1,10 @@
+*.dta
+*.csv
+*.parquet
+*.zip
+*.gz
+*.log
+*.smcl
+*.gph
+.DS_Store
+.claude

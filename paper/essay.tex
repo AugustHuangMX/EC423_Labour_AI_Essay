@@ -1,0 +1,180 @@
+% ============================================================
+% LSE EC423 Extended Essay Template
+% ============================================================
+% 格式要求：A4，双倍行距，12pt，页码编号，2.5cm 页边距
+% 字数上限 6,000（abstract、脚注、参考文献、附录不计入）
+% ============================================================
+
+\documentclass[a4paper, 12pt]{article}
+
+% ----- 基础包 -----
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}              % Latin Modern（正文 + 数学）
+\usepackage[british]{babel}     % British English 拼写规则
+\usepackage{csquotes}
+
+% ----- 页面布局 -----
+\usepackage[
+  a4paper,
+  top=2.5cm, bottom=2.5cm,
+  left=2.5cm, right=2.5cm
+]{geometry}
+
+\usepackage{setspace}
+\doublespacing                  % 双倍行距
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\thepage}         % 页码居中
+
+% ----- 数学 -----
+\usepackage{amsmath, amssymb, amsthm}
+
+% ----- 表格与图表 -----
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{font={small, singlespacing}, labelfont=bf}
+
+% ----- 参考文献 -----
+\usepackage[
+  style=authoryear,
+  backend=biber,
+  natbib=true,
+  maxcitenames=2,
+  maxbibnames=99,
+  uniquelist=false,
+  giveninits=true,
+  doi=false,
+  isbn=false,
+  url=false,
+  eprint=false
+]{biblatex}
+\addbibresource{refs.bib}
+
+% ----- 超链接（最后加载）-----
+\usepackage[hidelinks]{hyperref}
+
+% ----- 自定义命令 -----
+\newcommand{\candidatenumber}{XXXXX}   % ← 替换为你的 5 位 candidate number
+\newcommand{\coursecode}{EC423}
+
+% ============================================================
+\begin{document}
+
+% ----- 封面页 -----
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+  {\Large \textbf{\coursecode{} Extended Essay} \par}
+  \vspace{1cm}
+  {\large Independent Research \par}
+  \vspace{2cm}
+  {\LARGE \textbf{Canaries in Every Mine? \\ Offsetting Effects of AI on 
+  Junior and Senior Workers within Occupations} \par}
+  \vspace{2cm}
+  {\large Candidate Number: \candidatenumber \par}
+  \vspace{1cm}
+  {\large MSc Econometrics and Mathematical Economics \par}
+  {\large London School of Economics and Political Science \par}
+  \vspace{1cm}
+  {\large May 2026 \par}
+  \vfill
+  {\small Word count: [XXXX] \par}
+\end{titlepage}
+
+% ----- Abstract（不计入字数）-----
+\newpage
+\begin{abstract}
+\noindent
+[Your abstract here.]
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ============================================================
+% 正文开始
+% ============================================================
+
+\section{Introduction}
+\label{sec:intro}
+
+
+
+\section{Theoretical Framework}
+\label{sec:theory}
+
+Consider a single occupation producing output $Y$, by two types of tasks:
+
+\begin{itemize}
+  \item Task $L$: Low expertise, including routine jobs, easy be replaced by AI automation.
+  \item Task $H$: High expertise, including context-dependent tasks, management tasks, and other tasks requiring accumulated experience.
+
+\end{itemize}
+
+The output $Y$ follows a CES aggregation: 
+
+$$
+Y = [\beta y_L^\frac{\sigma-1}{\sigma} + (1-\beta)y_H^\frac{\sigma-1}{\sigma} ]^\frac{\sigma}{\sigma-1}
+$$
+
+
+
+
+\section{Existing Evidence}
+\label{sec:literature}
+
+
+
+\section{Data and Empirical Strategy}
+\label{sec:empirics}
+
+\subsection{Data: UK Labour Force Survey}
+
+\subsection{AI Exposure Measurement}
+
+\subsection{Empirical Specification}
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Descriptive Evidence}
+
+\subsection{Main Results}
+
+\subsection{Robustness}
+
+\section{Discussion}
+\label{sec:discussion}
+
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+
+
+% ============================================================
+% 参考文献（不计入字数）
+% ============================================================
+\newpage
+\singlespacing                  % 参考文献单倍行距，节省空间
+\printbibliography
+
+% ============================================================
+% 附录（不计入字数）
+% ============================================================
+\newpage
+\appendix
+\section{Additional Tables and Figures}
+\label{app:tables}
+
+
+
+\end{document}
