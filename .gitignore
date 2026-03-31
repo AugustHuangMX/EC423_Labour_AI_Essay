@@ -8,3 +8,8 @@
 *.gph
 .DS_Store
 .claude
+document
+# 忽略 raw 文件夹
+raw
+# 忽略 clean 文件夹
+clean
