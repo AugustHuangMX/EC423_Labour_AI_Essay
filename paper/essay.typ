@@ -11,7 +11,7 @@
 // ----- Configuration -----
 #let candidate-number = "XXXXX"        // Your 5-digit candidate number
 #let course-code     = "EC423"         // e.g. EC423
-#let essay-title     = "Canaries in Every Mine?  Offsetting Effects of AI on Junior and Senior Workers within Occupations"  // Your essay title
+#let essay-title     = "Title Title Title"  // Your essay title
 #let essay-format    = "Independent Research"  // or "Structured Research Assignment"
 #let word-count      = "XXXX"          // Final word count
 
@@ -44,6 +44,7 @@
   it
   par(text(size: 0pt, ""))  // empty par to reset indent
 }
+#show cite: set text(fill: rgb("#8B0000"))
 
 // ----- Headings -----
 #set heading(numbering: "1.1")
@@ -136,6 +137,8 @@ Measuring the impact of AI is hard. Unlike discrete, large-scale shocks such as 
 
 Another focus about this essay is about unemployment. I want to use the QLFS data in UK to investigate the impact of AI on unemployment, and whether the impact is different for junior and senior workers within occupations.
 
+= Literature Review
+
 
 = Theoretical Framework
 
@@ -156,21 +159,49 @@ where $sigma$ is the within-occupation elasticity of substitution between the tw
 
 
 
-= Literature Review
 
 
 
 
+= Data
 
-== Empirical Evidence
+The data I used here is the positions dataset provided by Revelio Labs, which contains detailed information on job postings in the UK. For analysis, I used data from 2019 to 2025, which allows me to capture the period before and after the release of ChatGPT tool in late 2022. 
+
+For each position, I observe the predicted salary, the O*NET occupation code, and other basic characteristics. Two additional variables are particularly relevant to this study. The first is an ordinal seniority variable, ranging from 1 to 7, that captures the hierarchical level of each position within an organisational structure. A detailed mapping is provided in @tab:seniority.#footnote[A detailed description of the seniority classification methodology is available at: https://www.data-dictionary.reveliolabs.com/methodology.html\#seniority.] I take this variable at face value throughout the analysis. #cite(<lichtinger_generative_2025>, form: "prose") validate the measure by showing that the distribution of job-title keywords aligns closely with expected seniority distinctions and remains stable both before and after the diffusion of generative AI, confirming that it reliably captures positional hierarchy over time.
+
+
+#figure(
+  {
+    set text(size: 10pt)
+  table(
+    columns: 3,
+    align: (center, left, left),
+    stroke: none,
+    table.hline(stroke: 0.8pt),
+    table.header(
+      [*Seniority*], [*Level*], [*Examples*],
+    ),
+    table.hline(stroke: 0.5pt),
+    [1], [Entry],            [Accounting Intern, Software Engineer Trainee, Paralegal],
+    [2], [Junior],           [Account Receivable Bookkeeper, Junior Software QA Engineer, Legal Adviser],
+    [3], [Associate],        [Senior Tax Accountant, Lead Electrical Engineer, Attorney],
+    [4], [Manager],          [Account Manager, Superintendent Engineer, Lead Lawyer],
+    [5], [Director],         [Chief of Accountants, VP Network Engineering, Head of Legal],
+    [6], [Executive],        [Managing Director (Treasury), Director of Engineering (Backend Systems), Attorney (Partner)],
+    [7], [Senior Executive], [CFO, COO, CEO],
+    table.hline(stroke: 0.8pt),
+  )},
+  caption: [Revelio Labs seniority classification],
+
+) <tab:seniority>
+
+
+The second is the position number, which records the chronological order of each position within a given individual's profile, with lower values corresponding to earlier roles. This variable enables the analysis of within-individual career mobility, which I exploit in a later section.
+
+I then merge the AI exposure scores constructed by #cite(<GPTs_are_GPTs>, form: "prose") to the positions dataset via the O*NET occupation code. Based on the merged scores, I classify occupations into three categories: low exposure (below the 25th percentile), medium exposure (25th to 75th percentile), and high exposure (above the 75th percentile).#footnote[The exposure scores are publicly available at: https://github.com/openai/GPTs-are-GPTs.]
 
 
 
-= Analysis
-
-== Data
-
-The data I used here is the positions dataset provided by Revelio Labs, which contains detailed information on job postings in the UK, including the O*NET codes for each occupation. For analysis, I used data from 2019 to 2025, which allows me to capture the period before and after the release of major generative AI tools in late 2022.
 
 = Discussion
 
