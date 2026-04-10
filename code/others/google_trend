@@ -1,0 +1,39 @@
+/*
+graph for google trend
+*/
+
+clear all
+set more off
+* 导入数据
+import delimited "/Users/huangminxing/Documents/EC423_Essay/raw/time_series_ChatGPT.csv", clear
+
+* 生成月度日期变量
+gen date = date(time, "YMD")
+format date %tdCCYY-NN
+
+* 生成 Stata 月度变量（用于 tsline）
+gen ym = mofd(date)
+format ym %tm
+
+twoway (area chatgpt ym, ///
+        color("220 38 38%40") ///
+        lwidth(none)) ///  // area 不画边线，交给 line 层统一画
+    (line chatgpt ym, ///
+        lcolor("220 38 38") lwidth(medthick)), ///
+    xline(`=tm(2022m11)', lcolor("59 130 246") lpattern(dash) lwidth(medium)) ///
+    text(95 `=tm(2022m11)' "ChatGPT release" "(Nov 2022)", ///
+        placement(west) size(small) color("59 130 246")) ///
+    xtitle("") ///
+    ytitle("Google Trends index (0–100)") ///
+    title("") ///
+    ylabel(0(20)100, angle(0) grid glcolor(gs14)) ///
+    xlabel(`=tm(2019m1)' `=tm(2020m1)' `=tm(2021m1)' `=tm(2022m1)' ///
+           `=tm(2023m1)' `=tm(2024m1)' `=tm(2025m1)', ///
+           format(%tmCCYY) angle(0)) ///
+    graphregion(color(white)) plotregion(color(white)) ///
+    legend(off) ///
+    scheme(s2color) ///
+    name(chatgpt_trend, replace)
+	
+
+graph export "/Users/huangminxing/Documents/EC423_Essay/output/figures/chatgpt_trend.png", replace
