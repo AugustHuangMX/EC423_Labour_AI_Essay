@@ -1,5 +1,6 @@
 /*
 合并 Revelio Positions UK 2019-2025，由于文件过大，因此采用逐步去重的方式
+理论上只需要 run 一次
 */
 
 clear
