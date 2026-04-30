@@ -1,81 +1,115 @@
 #figure(
-  text(size: 9pt)[#table(
-    columns: (auto, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
-    align: (left, center, center, center, center, center, center),
-    stroke: none,
-    inset: (x: 6pt, y: 4pt),
+  {
+    set text(size: 9pt)
+    table(
+      columns: 7,
+      align: (left, center, center, center, center, center, center),
+      stroke: none,
+      column-gutter: 0.4em,
 
-    // === 顶部粗线 ===
-    table.hline(stroke: 0.8pt),
+      table.hline(stroke: 0.8pt),
+      table.header(
+        table.cell(rowspan: 2)[],
+        table.cell(colspan: 2)[*Seniority Gain*],
+        table.cell(colspan: 2)[*Log Salary Gain*],
+        table.cell(colspan: 2)[*Occupation Switch*],
+        [(1)], [(2)], [(3)], [(4)], [(5)], [(6)],
+      ),
+      table.hline(stroke: 0.5pt),
 
-    // === 一级表头 ===
-    table.cell(rowspan: 2)[],
-    table.cell(colspan: 2)[_#sym.Delta Seniority_],
-    table.cell(colspan: 2)[_#sym.Delta ln Salary_],
-    table.cell(colspan: 2)[_Occ. Switch_],
+      [Junior],
+        [1.534\*\*\*], [1.517\*\*\*],
+        [--0.085\*\*\*], [--0.084\*\*\*],
+        [0.059\*\*], [0.067\*\*],
+      [],
+        [(0.049)], [(0.049)],
+        [(0.014)], [(0.014)],
+        [(0.027)], [(0.027)],
 
-    table.hline(start: 1, end: 3, stroke: 0.5pt),
-    table.hline(start: 3, end: 5, stroke: 0.5pt),
-    table.hline(start: 5, end: 7, stroke: 0.5pt),
+      [Junior $times$ AI],
+        [--0.617\*\*\*], [--0.605\*\*\*],
+        [0.031], [0.030],
+        [--0.034], [--0.040],
+      [],
+        [(0.094)], [(0.094)],
+        [(0.026)], [(0.026)],
+        [(0.047)], [(0.047)],
 
-    // === 二级表头 ===
-    [(1)], [(2)], [(3)], [(4)], [(5)], [(6)],
+      [Junior $times$ Post],
+        [--0.114\*\*\*], [--0.117\*\*\*],
+        [0.032\*\*\*], [0.032\*\*\*],
+        [--0.006], [--0.004],
+      [],
+        [(0.015)], [(0.015)],
+        [(0.007)], [(0.007)],
+        [(0.007)], [(0.007)],
 
-    table.hline(stroke: 0.5pt),
+      [AI $times$ Post],
+        [0.019], [0.035],
+        [--0.111\*\*\*], [--0.112\*\*\*],
+        [0.020], [0.013],
+      [],
+        [(0.025)], [(0.025)],
+        [(0.015)], [(0.015)],
+        [(0.014)], [(0.014)],
 
-    // === Junior ===
-    [Junior], [1.241#super[\*\*\*]], [1.197#super[\*\*\*]], [--0.042#super[\*\*]], [--0.042#super[\*\*]], [0.161#super[\*\*\*]], [0.180#super[\*\*\*]],
-    [], [(0.069)], [(0.067)], [(0.019)], [(0.018)], [(0.047)], [(0.048)],
+      [Junior $times$ AI $times$ Post],
+        [0.122\*\*\*], [0.125\*\*\*],
+        [0.007], [0.006],
+        [--0.008], [--0.009],
+      [],
+        [(0.030)], [(0.030)],
+        [(0.013)], [(0.013)],
+        [(0.013)], [(0.013)],
 
-    // === AI Exposure ===
-    [AI Exposure], [0.683#super[\*\*\*]], [0.591#super[\*\*\*]], [0.088#super[\*\*\*]], [0.087#super[\*\*\*]], [--0.143], [--0.103],
-    [], [(0.127)], [(0.123)], [(0.030)], [(0.029)], [(0.093)], [(0.094)],
+      [$Delta$ Seniority],
+        [], [],
+        [0.203\*\*\*], [0.203\*\*\*],
+        [], [],
+      [],
+        [], [],
+        [(0.002)], [(0.002)],
+        [], [],
 
-    // === Post ===
-    [Post], [0.104#super[\*\*\*]], [0.063#super[\*\*\*]], [--0.032#super[\*\*\*]], [--0.033#super[\*\*\*]], [--0.004], [0.013],
-    [], [(0.017)], [(0.018)], [(0.009)], [(0.008)], [(0.009)], [(0.009)],
+      [IMR],
+        [], [--0.129\*\*\*],
+        [], [0.011\*\*\*],
+        [], [0.057\*\*\*],
+      [],
+        [], [(0.014)],
+        [], [(0.003)],
+        [], [(0.006)],
 
-    // === Junior × AI Exp. ===
-    [Junior $times$ AI Exp.], [--0.329#super[\*\*\*]], [--0.274#super[\*\*]], [--0.005], [--0.004], [--0.120#super[\*]], [--0.143#super[\*\*]],
-    [], [(0.109)], [(0.107)], [(0.030)], [(0.029)], [(0.072)], [(0.073)],
+      table.hline(stroke: 0.3pt),
 
-    // === Junior × Post ===
-    [Junior $times$ Post], [--0.118#super[\*\*\*]], [--0.084#super[\*\*\*]], [0.039#super[\*\*\*]], [0.040#super[\*\*\*]], [--0.004], [--0.019#super[\*\*]],
-    [], [(0.018)], [(0.018)], [(0.007)], [(0.007)], [(0.009)], [(0.008)],
+      [_N_],
+        [12,487,780], [12,487,780],
+        [10,676,852], [10,676,852],
+        [12,487,780], [12,487,780],
+      [_R_#super[2]],
+        [0.160], [0.161],
+        [0.350], [0.351],
+        [0.120], [0.121],
+      [Occupation FE],
+        [Yes], [Yes],
+        [Yes], [Yes],
+        [Yes], [Yes],
+      [Month FE],
+        [Yes], [Yes],
+        [Yes], [Yes],
+        [Yes], [Yes],
+      [Heckman correction],
+        [No], [Yes],
+        [No], [Yes],
+        [No], [Yes],
 
-    // === AI Exp. × Post ===
-    [AI Exp. $times$ Post], [0.052#super[\*]], [0.144#super[\*\*\*]], [--0.110#super[\*\*\*]], [--0.108#super[\*\*\*]], [0.019], [--0.021],
-    [], [(0.029)], [(0.031)], [(0.015)], [(0.015)], [(0.016)], [(0.016)],
-
-
-
-    // === Triple-diff（关键系数，加粗） ===
-    [*Junior $times$ AI Exp. $times$ Post*], [*0.124*#super[\*\*\*]], [*0.061*#super[\*]], [*--0.003*], [*--0.004*], [*--0.015*], [*0.012*],
-    [], [*(0.034)*], [*(0.035)*], [*(0.013)*], [*(0.013)*], [*(0.015)*], [*(0.015)*],
-
-
-
-    // === Δ Seniority（仅 Salary 列） ===
-    [#sym.Delta Seniority], [], [], [0.202#super[\*\*\*]], [0.202#super[\*\*\*]], [], [],
-    [], [], [], [(0.003)], [(0.003)], [], [],
-
-    // === IMR（仅 Heckman 列） ===
-    [IMR ($lambda$)], [], [--0.174#super[\*\*\*]], [], [--0.003], [], [0.075#super[\*\*\*]],
-    [], [], [(0.019)], [], [(0.005)], [], [(0.011)],
-
-    // === Constant ===
-    [Constant], [--0.801#super[\*\*\*]], [--0.612#super[\*\*\*]], [0.068#super[\*\*\*]], [0.071#super[\*\*\*]], [0.688#super[\*\*\*]], [0.606#super[\*\*\*]],
-    [], [(0.076)], [(0.074)], [(0.019)], [(0.017)], [(0.059)], [(0.063)],
-
-    table.hline(stroke: 0.5pt),
-
-    // === 模型统计量 ===
-    [_N_], [12,487,869], [12,487,869], [10,676,912], [10,676,912], [12,487,869], [12,487,869],
-    [$R^2$], [0.138], [0.139], [0.341], [0.341], [0.020], [0.022],
-    [Heckman correction], [No], [Yes], [No], [Yes], [No], [Yes],
-
-    table.hline(stroke: 0.8pt),
-  )],
+      table.hline(stroke: 0.8pt),
+    )
+  },
+  caption: [Career mobility regressions: intensive margin outcomes conditional on job transition],
   kind: table,
-  caption: [Career mobility regressions: triple-difference estimates],
 ) <tab:mobility>
+
+#text(size: 8pt, style: "italic")[
+  _Notes:_ Sample restricted to workers observed in at least two positions. Columns (1)–(2) report seniority gain (levels); columns (3)–(4) report log salary change controlling for seniority gain; columns (5)–(6) report occupation switching (linear probability model). Odd columns are baseline OLS; even columns include Heckman selection correction using firm-level pre-period separation rate as the exclusion restriction. Standard errors clustered at the O\*NET occupation level in parentheses. \*\*\* $p < 0.01$, \*\* $p < 0.05$, \* $p < 0.10$.
+]

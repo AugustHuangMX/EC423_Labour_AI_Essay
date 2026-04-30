@@ -16,25 +16,7 @@ Compositional Shift 指成分变化
            2c. 绝对数量图（low exposure 组 junior vs senior）
   Part 3 — Pooled DiD 回归 + 导出系数 CSV
   Part 4 — Event study: junior share（半年度 + 季度）
-           基准期 = 2017H1 / 2017Q1
-           时间窗口 2017–2025
-  Part 5 — Event study: log count by seniority（季度）
-           基准期 = 2017Q1
 
-数据：positions_all.dta（~50.7M obs，已 merge AI exposure）
-Post 定义：startdate >= 01jan2023（following H&L 2025）
-Cluster SE：O*NET code level
-
-预计产出文件：
-  - output/figures/junior_share_monthly.png
-  - output/figures/abs_count_high_exp.png
-  - output/figures/abs_count_low_exp.png
-  - output/figures/event_study_half.png      （半年度 junior share）
-  - output/figures/event_study_quarterly.png  （季度 junior share）
-  - output/figures/event_study_did_seniority.png（季度 log count by seniority）
-  - output/tables/did_pooled.csv
-  - output/tables/es_half_coefs.csv
-  - output/tables/es_quarterly_coefs.csv
 ============================================================
 */
 
@@ -64,12 +46,12 @@ save `bad_users'
 restore
 
 merge m:1 user_id using `bad_users', keep(master) nogen
+
+save "$root/clean/positions_all.dta", replace
 ** merge 的含义是 many to one. 第一个变量是匹配变量。using xxx 的含义是用此前保存过的 `bad_users` 数据集来 merge。keep(master) 的含义是只保留 master 数据集（即原始数据）中的观测。nogen 的含义是 merge 后不生成 _merge 变量。 keep(master) 意味着保存没有匹配的主数据行(即不在 bad_users) 里的行。
 ** nogen 意味着不生成 _merge 变量。因为我们只关心保留原始数据中的观测，而不需要知道哪些观测被匹配到了 bad_users 中。
 
 
-di as text "=== Part 0 完成：数据加载 + 异常用户清洗 ==="
-di as text "剩余观测数：" _N
 
 
 * ============================================================
@@ -92,17 +74,31 @@ gen ym = mofd(startdate) if startdate != .
 format ym %tm
 label variable ym "职位开始月份"
 
-gen high_exp = (ai_exposure >= 0.3658537) if ai_exposure != .
-label variable high_exp "高AI暴露组（median split）"
-label define high_exp_lb 0 "Low AI Exposure" 1 "High AI Exposure"
-label values high_exp high_exp_lb
+** 按照中位数进行更改
+
+label variable high_m1 "m1: 高AI暴露组"
+label variable high_m2 "m2: 高AI暴露组"
+label variable high_m3 "m3: 高AI暴露组"
+
+** 打标签
+label define high_m1_lb 0 "Low AI Exposure" 1 "High AI Exposure"
+label values high_m1 high_m1_lb
+label define high_m2_lb 0 "Low AI Exposure" 1 "High AI Exposure"
+label values high_m2 high_m2_lb
+label define high_m3_lb 0 "Low AI Exposure" 1 "High AI Exposure"
+label values high_m3 high_m3_lb
+
+
 
 gen post = (startdate >= td(01jan2023)) if startdate != .
 label variable post "Post-ChatGPT（2023年1月起）"
 
 di as text "=== Part 1 完成：变量构建 ==="
+
 tab is_junior
-tab high_exp
+tab high_m1
+tab high_m2
+tab high_m3
 tab post
 
 
@@ -114,10 +110,10 @@ tab post
 preserve
 keep if ym != . & ym >= tm(2018m1) & ym <= tm(2025m12)
 
-collapse (mean) junior_share = is_junior (count) n = is_junior, by(ym high_exp)
+collapse (mean) junior_share = is_junior (count) n = is_junior, by(ym high_m1)
 
-twoway (line junior_share ym if high_exp == 1, lcolor(cranberry) lwidth(medthick)) ///
-       (line junior_share ym if high_exp == 0, lcolor(navy) lwidth(medthick)), ///
+twoway (line junior_share ym if high_m1 == 1, lcolor(cranberry) lwidth(medthick)) ///
+       (line junior_share ym if high_m1 == 0, lcolor(navy) lwidth(medthick)), ///
        xline(`=tm(2022m11)', lcolor(gs8) lpattern(dash)) ///
        xtitle("") ytitle("Junior Share of New Positions") ///
        legend(order(1 "High AI Exposure" 2 "Low AI Exposure") ///
@@ -125,36 +121,36 @@ twoway (line junior_share ym if high_exp == 1, lcolor(cranberry) lwidth(medthick
        xlabel(, format(%tmCY) angle(45)) ///
        note("Vertical line: ChatGPT release (Nov 2022). Junior = seniority ≤ 2." ///
             "AI exposure median split at 0.366 (Eloundou et al. 2024).")
-graph export "$output/junior_share_monthly.png", replace width(2000)
+// graph export "$output/junior_share_monthly.png", replace width(2000)
 restore
 
 * --- 2b. 绝对数量图：高暴露组 ---
 preserve
 keep if ym != . & ym >= tm(2018m1) & ym <= tm(2025m12)
 gen one = 1
-collapse (count) n = one, by(ym high_exp is_junior)
+collapse (count) n = one, by(ym high_m1 is_junior)
 gen n_k = n / 1000
 
-twoway (line n_k ym if high_exp == 1 & is_junior == 1, lcolor(cranberry) lwidth(medthick)) ///
-       (line n_k ym if high_exp == 1 & is_junior == 0, lcolor(navy) lwidth(medthick)), ///
+twoway (line n_k ym if high_m1 == 1 & is_junior == 1, lcolor(cranberry) lwidth(medthick)) ///
+       (line n_k ym if high_m1 == 1 & is_junior == 0, lcolor(navy) lwidth(medthick)), ///
        xline(`=tm(2022m11)', lcolor(gs8) lpattern(dash)) ///
        xtitle("") ytitle("New Position Starts (thousands)") ///
        legend(order(1 "Junior (seniority ≤ 2)" 2 "Senior (seniority ≥ 3)") ///
               rows(1) position(6)) ///
        xlabel(, format(%tmCY) angle(45)) ///
        note("Vertical line: ChatGPT release (Nov 2022).")
-graph export "$output/abs_count_high_exp.png", replace width(2000)
+//graph export "$output/abs_count_high_exp.png", replace width(2000)
 
 * --- 2c. 绝对数量图：低暴露组 ---
-twoway (line n_k ym if high_exp == 0 & is_junior == 1, lcolor(cranberry) lwidth(medthick)) ///
-       (line n_k ym if high_exp == 0 & is_junior == 0, lcolor(navy) lwidth(medthick)), ///
+twoway (line n_k ym if high_m1 == 0 & is_junior == 1, lcolor(cranberry) lwidth(medthick)) ///
+       (line n_k ym if high_m1 == 0 & is_junior == 0, lcolor(navy) lwidth(medthick)), ///
        xline(`=tm(2022m11)', lcolor(gs8) lpattern(dash)) ///
        xtitle("") ytitle("New Position Starts (thousands)") ///
        legend(order(1 "Junior (seniority ≤ 2)" 2 "Senior (seniority ≥ 3)") ///
               rows(1) position(6)) ///
        xlabel(, format(%tmCY) angle(45)) ///
        note("Vertical line: ChatGPT release (Nov 2022).")
-graph export "$output/abs_count_low_exp.png", replace width(2000)
+//graph export "$output/abs_count_low_exp.png", replace width(2000)
 restore
 
 di as text "=== Part 2 完成：描述性图 ==="
@@ -165,20 +161,30 @@ di as text "=== Part 2 完成：描述性图 ==="
 * ============================================================
 
 preserve
-keep if ym != . & ym >= tm(2018m1) & ym <= tm(2025m12)
+keep if ym >= tm(2018m1) & ym <= tm(2025m12)
 
-reg is_junior c.ai_exposure##i.post, vce(cluster onet_code)
+* 生成半年度编码（和 event study 一致）
+gen half = yofd(dofm(ym))
+replace half = half + 0.5 if month(dofm(ym)) >= 7
+gen hy = (half - 2018) * 2 + 1
 
-regsave using "$tables/did_pooled.csv", replace ci level(95) ///
-    addlabel(spec, "Pooled DiD")
+* Collapse 到职业×半年度
+collapse (mean) junior_share = is_junior (count) n = is_junior ///
+         (first) m1, by(onet_code hy)
 
-di as text "=== Part 3 完成：Pooled DiD ==="
+* 生成 post 变量（hy >= 10 即 2022H2 及之后）
+gen post = (hy >= 10)
+
+* Pooled DiD，和 event study 同一数据结构
+gen ai_post = m1 * post
+reghdfe junior_share ai_post [aweight = n], ///
+    absorb(onet_code hy) vce(cluster onet_code)
+
 restore
-
 
 * ============================================================
 * Part 4: Event Study — junior share（半年度）
-* Omitted baseline = 2022H1 = hy 9
+* Omitted baseline = 2022H2 = hy 10
 * 时间窗口 2018H1–2025H2 (16 periods)
 * ============================================================
 
@@ -186,17 +192,17 @@ preserve
 keep if ym != . & ym >= tm(2018m1) & ym <= tm(2025m12)
 
 gen half = yofd(dofm(ym))
-replace half = half + 0.5 if mod(month(dofm(ym)) - 1, 6) >= 3
+replace half = half + 0.5 if month(dofm(ym)) >= 7
 gen hy = (half - 2018) * 2 + 1
 label variable hy "半年度编码（1=2018H1, ..., 16=2025H2）"
 
 collapse (mean) junior_share = is_junior (count) n = is_junior ///
-         (first) ai_exposure, by(onet_code hy)
+         (first) m1, by(onet_code hy)
 
 forvalues k = 1/16 {
-    gen interact_`k' = ai_exposure * (hy == `k')
+    gen interact_`k' = m1 * (hy == `k')
 }
-drop interact_9  // omitted baseline = 2022H1
+drop interact_10 // omitted baseline = 2022H1
 
 reghdfe junior_share interact_* [aweight = n], ///
     absorb(onet_code hy) vce(cluster onet_code)
@@ -208,14 +214,15 @@ rename ci_lower ci_lo_base
 rename ci_upper ci_hi_base
 keep period coef_base ci_lo_base ci_hi_base
 
-* 补回基准期
+* 手动补回基准期
 local N_plus = _N + 1
 set obs `N_plus'
-replace period = 9 if period == .
-replace coef_base = 0 if period == 9
-replace ci_lo_base = 0 if period == 9
-replace ci_hi_base = 0 if period == 9
+replace period = 10 if period == .
+replace coef_base = 0 if period == 10
+replace ci_lo_base = 0 if period == 10
+replace ci_hi_base = 0 if period == 10
 sort period
+
 
 * 生成半年度标签
 gen label = ""
@@ -224,13 +231,12 @@ forvalues i = 1/16 {
     local h = mod(`i' - 1, 2) + 1
     replace label = "`yr'H`h'" if period == `i'
 }
-replace label = "2022H1" if period == 9
+replace label = "2022H2" if period == 10
 
 * 正文图
 twoway (rarea ci_hi_base ci_lo_base period, color(cranberry%15) lwidth(none)) ///
        (connected coef_base period, lcolor(cranberry) mcolor(cranberry) ///
             msymbol(circle) msize(medsmall) lwidth(medthick)), ///
-       xline(10, lcolor(gs8) lpattern(dash)) ///
        yline(0, lcolor(gs10) lpattern(solid) lwidth(thin)) ///
        xtitle("") ///
        ytitle("β: AI Exposure × Period", size(medium)) ///
@@ -242,8 +248,7 @@ twoway (rarea ci_hi_base ci_lo_base period, color(cranberry%15) lwidth(none)) //
               labsize(vsmall) angle(45)) ///
        ylabel(, labsize(small) format(%5.2f)) ///
        graphregion(color(white)) plotregion(color(white)) ///
-       note("Baseline period: 2022H1. Dashed line marks onset of post-adoption period (2023H1)." ///
-            "Standard errors clustered at O*NET code level. Shaded area: 95% CI.", ///
+       note("Standard errors clustered at O*NET code level. Shaded area: 95% CI.", ///
             size(vsmall))
 graph export "$output/event_study_baseline.png", replace width(2000)
 
@@ -258,179 +263,74 @@ di as text "=== Part 4 完成：半年度 Event Study ==="
 
 * ============================================================
 * Part 4b: Event Study — junior share（季度）
-* 基准期 = 2017Q1 = qtr 1, 时间窗口 2017Q1–2025Q4 (36 periods)
+* 基准期 = 2018Q1 = qtr 1, 时间窗口 2018Q1–2025Q4 (32 periods)
 * ============================================================
 
 preserve
-keep if ym != . & ym >= tm(2017m1) & ym <= tm(2025m12)
+keep if ym >= tm(2018m1) & ym <= tm(2025m12)
 
+* 生成季度编码（1=2018Q1, ..., 32=2025Q4）
 gen yr = yofd(dofm(ym))
 gen q = ceil(month(dofm(ym)) / 3)
-gen qtr = (yr - 2017) * 4 + q
+gen qtr = (yr - 2018) * 4 + q
 
+* Collapse 到职业×季度
 collapse (mean) junior_share = is_junior (count) n = is_junior ///
-         (first) ai_exposure, by(onet_code qtr)
+         (first) m1, by(onet_code qtr)
 
-forvalues k = 1/36 {
-    gen interact_`k' = ai_exposure * (qtr == `k')
+* 生成交互项，基准期 = 2022Q1 = qtr 17
+forvalues k = 1/32 {
+    gen interact_`k' = m1 * (qtr == `k')
 }
-drop interact_1  // 基准期 = 2017Q1
+drop interact_19  // omitted baseline = 2022Q3
 
 reghdfe junior_share interact_* [aweight = n], ///
     absorb(onet_code qtr) vce(cluster onet_code)
 
 regsave interact_*, ci level(95)
 gen period = real(subinstr(var, "interact_", "", .))
-replace period = period - 1  // 2017Q1 = 0
 rename coef coef_base
 rename ci_lower ci_lo_base
 rename ci_upper ci_hi_base
 keep period coef_base ci_lo_base ci_hi_base
 
+* 补回基准期
 local N_plus = _N + 1
 set obs `N_plus'
-replace period = 0 if period == .
-replace coef_base = 0 if period == 0
-replace ci_lo_base = 0 if period == 0
-replace ci_hi_base = 0 if period == 0
+replace period = 19 if period == .
+replace coef_base = 0 if period == 19
+replace ci_lo_base = 0 if period == 19
+replace ci_hi_base = 0 if period == 19
 sort period
 
-* ChatGPT onset = 2023Q1 = qtr 25 → period 24, 虚线在 23.5
+* 生成季度标签
+gen label = ""
+forvalues i = 1/32 {
+    local yr = 2018 + floor((`i' - 1) / 4)
+    local qq = mod(`i' - 1, 4) + 1
+    replace label = "`yr'Q`qq'" if period == `i'
+}
+
+* 图
 twoway (rarea ci_hi_base ci_lo_base period, color(cranberry%15) lwidth(none)) ///
        (connected coef_base period, lcolor(cranberry) mcolor(cranberry) ///
             msymbol(circle) msize(medsmall) lwidth(medthick)), ///
-       xline(23.5, lcolor(gs8) lpattern(dash)) ///
        yline(0, lcolor(gs10) lpattern(solid) lwidth(thin)) ///
-       xtitle("") ytitle("β: AI Exposure × Quarter", size(medium)) ///
+       xtitle("") ///
+       ytitle("β: AI Exposure × Quarter", size(medium)) ///
        legend(off) ///
-       xlabel(0 "2017Q1" 4 "2018Q1" 8 "2019Q1" 12 "2020Q1" ///
-              16 "2021Q1" 20 "2022Q1" 24 "2023Q1" 28 "2024Q1" ///
-              32 "2025Q1" 35 "2025Q4", ///
+       xlabel(1 "2018Q1" 5 "2019Q1" 9 "2020Q1" 13 "2021Q1" ///
+              17 "2022Q1" 21 "2023Q1" 25 "2024Q1" 29 "2025Q1" ///
+              32 "2025Q4", ///
               labsize(vsmall) angle(45)) ///
        ylabel(, labsize(small) format(%5.2f)) ///
        graphregion(color(white)) plotregion(color(white)) ///
-       note("Baseline: 2017Q1. Dashed line marks post-adoption onset (2023Q1)." ///
-            "Junior share. Standard errors clustered at O*NET code level. 95% CI.", ///
+       note("Standard errors clustered at O*NET code level. Shaded area: 95% CI.", ///
             size(vsmall))
 graph export "$output/event_study_quarterly.png", replace width(2000)
 
-export delimited period coef_base ci_lo_base ci_hi_base ///
+export delimited period label coef_base ci_lo_base ci_hi_base ///
     using "$tables/es_quarterly_coefs.csv", replace
-
 restore
-
 di as text "=== Part 4b 完成：季度 Event Study ==="
 
-
-* ============================================================
-* Part 5: DiD Event Study — log count by seniority（季度）
-* 基准期 = 2017Q1, 时间窗口 2017Q1–2025Q4
-* ============================================================
-
-preserve
-keep if ym != . & ym >= tm(2017m1) & ym <= tm(2025m12)
-
-gen yr = yofd(dofm(ym))
-gen q = ceil(month(dofm(ym)) / 3)
-gen qtr = (yr - 2017) * 4 + q
-
-gen one = 1
-collapse (count) n = one, by(onet_code qtr is_junior ai_exposure)
-gen ln_n = ln(n)
-
-forvalues k = 1/36 {
-    gen interact_`k' = ai_exposure * (qtr == `k')
-}
-
-tempfile did_seniority_data
-save `did_seniority_data'
-restore
-
-* --- Junior ---
-use `did_seniority_data', clear
-keep if is_junior == 1
-drop interact_1
-
-reghdfe ln_n interact_* [aweight = n], ///
-    absorb(onet_code qtr) vce(cluster onet_code)
-
-regsave interact_*, ci level(95)
-gen period = real(subinstr(var, "interact_", "", .))
-replace period = period - 1
-rename coef coef_junior
-rename ci_lower ci_lo_junior
-rename ci_upper ci_hi_junior
-keep period coef_junior ci_lo_junior ci_hi_junior
-tempfile junior_es
-save `junior_es'
-
-* --- Senior ---
-use `did_seniority_data', clear
-keep if is_junior == 0
-drop interact_1
-
-reghdfe ln_n interact_* [aweight = n], ///
-    absorb(onet_code qtr) vce(cluster onet_code)
-
-regsave interact_*, ci level(95)
-gen period = real(subinstr(var, "interact_", "", .))
-replace period = period - 1
-rename coef coef_senior
-rename ci_lower ci_lo_senior
-rename ci_upper ci_hi_senior
-keep period coef_senior ci_lo_senior ci_hi_senior
-tempfile senior_es
-save `senior_es'
-
-* --- 合并 + 画图 ---
-use `junior_es', clear
-merge 1:1 period using `senior_es', nogen
-
-local N_plus = _N + 1
-set obs `N_plus'
-replace period = 0 if period == .
-foreach v of varlist coef_* ci_* {
-    replace `v' = 0 if period == 0
-}
-sort period
-
-twoway (rarea ci_hi_junior ci_lo_junior period, color(cranberry%15) lwidth(none)) ///
-       (connected coef_junior period, lcolor(cranberry) mcolor(cranberry) ///
-            msymbol(circle) msize(small) lwidth(medthick)) ///
-       (rarea ci_hi_senior ci_lo_senior period, color(navy%15) lwidth(none)) ///
-       (connected coef_senior period, lcolor(navy) mcolor(navy) ///
-            msymbol(diamond) msize(small) lwidth(medthick)), ///
-       xline(23.5, lcolor(gs8) lpattern(dash)) ///
-       yline(0, lcolor(gs10) lpattern(solid) lwidth(thin)) ///
-       xtitle("") ytitle("β: AI Exposure × Quarter", size(medium)) ///
-       legend(order(2 "Juniors" 4 "Seniors") ///
-              rows(1) position(6) size(small)) ///
-       xlabel(0 "2017Q1" 4 "2018Q1" 8 "2019Q1" 12 "2020Q1" ///
-              16 "2021Q1" 20 "2022Q1" 24 "2023Q1" 28 "2024Q1" ///
-              32 "2025Q1" 35 "2025Q4", ///
-              labsize(vsmall) angle(45)) ///
-       ylabel(, labsize(small)) ///
-       graphregion(color(white)) plotregion(color(white)) ///
-       note("Baseline: 2017Q1. Dashed line marks post-adoption onset (2023Q1)." ///
-            "Log position count. Standard errors clustered at O*NET code level. 95% CI.", ///
-            size(vsmall))
-graph export "$output/event_study_did_seniority.png", replace width(2000)
-
-di as text "=== Part 5 完成：DiD by Seniority ==="
-
-
-* ============================================================
-di as text "=============================================="
-di as text "02_compositional_shift.do 全部完成"
-di as text "=============================================="
-di as text "产出文件："
-di as text "  $output/junior_share_monthly.png"
-di as text "  $output/abs_count_high_exp.png"
-di as text "  $output/abs_count_low_exp.png"
-di as text "  $output/event_study_half.png"
-di as text "  $output/event_study_quarterly.png"
-di as text "  $output/event_study_did_seniority.png"
-di as text "  $tables/did_pooled.csv"
-di as text "  $tables/es_half_coefs.csv"
-di as text "  $tables/es_quarterly_coefs.csv"
-di as text "=============================================="

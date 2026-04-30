@@ -1,0 +1,355 @@
+/*
+============================================================
+04_mobility_heckman.do
+============================================================
+目的：Career Mobility 分析，构建论文 Empirical Results 中
+      Mobility subsection 所需的全部回归结果和表格。
+
+逻辑：
+  Part 1 — Intensive Margin（Heckman Two-Step）
+    1a. 构建公司级 pre-period separation rate 作为 exclusion restriction
+    1b. 在 10% sample 上跑 probit（全量太慢），手动计算 IMR
+    1c. Outcome regressions: delta_seniority, delta_log_salary, occ_switch
+        分别跑 baseline（无 IMR）和 Heckman-corrected（有 IMR）版本
+    → 导出 Table 1: 主回归结果（6 列）
+
+  Part 2 — Extensive Margin
+    2a. 描述性：transition rate by junior × ai_group × post
+    2b. Triple-diff regression: P(transition) as outcome
+    2c. Robustness: 排除 2024 年 7 月后开始的 position
+    → 导出 Table 2: extensive margin 回归结果（2 列）
+
+  Part 3 — 描述性统计
+    3a. Transition sample 的关键变量 summary statistics
+    → 导出 Table 3: 描述性统计
+
+导出表格清单（论文中需要体现的）：
+  - Table 1 (正文): 主回归结果，6 列
+      Col 1-2: delta_seniority (baseline / Heckman)
+      Col 3-4: delta_log_salary (baseline / Heckman)
+      Col 5-6: occ_switch (baseline / Heckman)
+  - Table 2 (正文): extensive margin，2 列
+      Col 1: full sample, Col 2: robustness (exclude recent)
+  - Table 3 (正文或 appendix): 描述性统计
+  - Table 4 (appendix): transition rate by junior × ai_group × post
+============================================================
+*/
+
+clear all
+set more off
+
+global clean "/Users/huangminxing/Documents/EC423_Essay/clean"
+global output "/Users/huangminxing/Documents/EC423_Essay/output/tables"
+
+* 确保 output 文件夹存在
+capture mkdir "$output"
+
+* --- 辅助 program：根据 t 值返回星号 ---
+capture program drop get_stars
+program define get_stars, rclass
+    args b se
+    local t = abs(`b' / `se')
+    if `t' >= 2.576 {
+        return local stars "***"
+    }
+    else if `t' >= 1.960 {
+        return local stars "**"
+    }
+    else if `t' >= 1.645 {
+        return local stars "*"
+    }
+    else {
+        return local stars ""
+    }
+end
+
+use "$clean/transitions_clean.dta", clear
+* extensive margin 用的时间 FE 变量（每个 position 的 start month）
+gen int start_ym = mofd(startdate)
+format start_ym %tm
+
+* ============================================================
+* Part 3（先跑）: 描述性统计
+* ============================================================
+
+capture drop is_junior
+gen byte is_junior = (seniority <= 2)
+
+preserve
+keep if has_transition
+
+* 全样本
+tabstat delta_seniority delta_log_salary m1 salary occ_switch, ///
+    stat(n mean sd p25 p50 p75) columns(statistics) save
+matrix A = r(StatTotal)
+
+* Junior
+tabstat delta_seniority delta_log_salary m1 salary occ_switch ///
+    if is_junior == 1, stat(n mean sd p25 p50 p75) columns(statistics) save
+matrix B = r(StatTotal)
+
+* Senior
+tabstat delta_seniority delta_log_salary m1 salary occ_switch ///
+    if is_junior == 0, stat(n mean sd p25 p50 p75) columns(statistics) save
+matrix C = r(StatTotal)
+
+* 导出 Table 3
+putexcel set "$output/table3_summary_stats.xlsx", replace
+putexcel A1 = "Variable" B1 = "N" C1 = "Mean" D1 = "SD" E1 = "p25" F1 = "p50" G1 = "p75"
+putexcel A2 = "Panel A: Full Transition Sample"
+putexcel A3 = matrix(A'), names
+putexcel A10 = "Panel B: Junior (seniority <= 2)"
+putexcel A11 = matrix(B'), names
+putexcel A18 = "Panel C: Senior (seniority > 2)"
+putexcel A19 = matrix(C'), names
+
+restore
+
+* ============================================================
+* Part 1: Intensive Margin (Heckman Two-Step)
+* ============================================================
+
+* --- 1a: 构建公司级 separation rate ---
+gen byte pre_period = (startdate < td(01nov2022)) if !missing(startdate)
+bysort company_id: egen float firm_n_pre = total(pre_period == 1) 
+bysort company_id: egen float firm_trans_pre = total(pre_period == 1 & has_transition == 1)
+gen float firm_sep_rate = firm_trans_pre / firm_n_pre if firm_n_pre > 0
+drop firm_n_pre firm_trans_pre pre_period
+
+* --- 生成交互项 ---
+gen float junior_ai = is_junior * m1
+gen byte junior_post = is_junior * post
+gen float ai_post = m1 * post
+gen float junior_ai_post = is_junior * m1 * post
+gen float firm_sep_junior = firm_sep_rate * is_junior
+
+* 对没有 transition 的 position，用 startdate 判断 post
+replace post = (startdate >= td(01nov2022)) if missing(post) & !missing(startdate)
+
+* 重新生成交互项
+replace junior_post = is_junior * post
+replace ai_post = m1 * post
+replace junior_ai_post = is_junior * m1 * post
+
+* --- 1b: Probit on 10% sample → IMR ---
+gen byte probit_sample = (mod(user_id, 10) == 0)
+egen int onet_num = group(onet_code)
+probit has_transition is_junior junior_ai junior_post ai_post junior_ai_post ///
+    firm_sep_rate firm_sep_junior i.onet_num ///
+    if probit_sample == 1
+
+* predict 对全样本（含 probit_sample == 0）自动计算 xb
+predict double xb, xb
+gen double imr = normalden(xb) / normal(xb) if has_transition == 1
+drop probit_sample
+
+* --- 1c: Outcome regressions（with occupation × month FE）---
+
+* Baseline: delta_seniority
+reghdfe delta_seniority is_junior junior_ai junior_post ai_post junior_ai_post ///
+    if has_transition == 1 & !missing(imr), ///
+    absorb(onet_code transition_ym) cluster(onet_code)
+estimates store base_sen
+
+* Heckman: delta_seniority
+reghdfe delta_seniority is_junior junior_ai junior_post ai_post junior_ai_post ///
+    imr if has_transition == 1, ///
+    absorb(onet_code transition_ym) cluster(onet_code)
+estimates store heck_sen
+
+* Baseline: delta_log_salary
+reghdfe delta_log_salary is_junior junior_ai junior_post ai_post junior_ai_post ///
+    delta_seniority ///
+    if has_transition == 1 & bad_salary_transition == 0 & !missing(imr), ///
+    absorb(onet_code transition_ym) cluster(onet_code)
+estimates store base_sal
+
+* Heckman: delta_log_salary
+reghdfe delta_log_salary is_junior junior_ai junior_post ai_post junior_ai_post ///
+    delta_seniority imr ///
+    if has_transition == 1 & bad_salary_transition == 0, ///
+    absorb(onet_code transition_ym) cluster(onet_code)
+estimates store heck_sal
+
+* Baseline: occ_switch
+reghdfe occ_switch is_junior junior_ai junior_post ai_post junior_ai_post ///
+    if has_transition == 1 & !missing(imr), ///
+    absorb(onet_code transition_ym) cluster(onet_code)
+estimates store base_occ
+
+* Heckman: occ_switch
+reghdfe occ_switch is_junior junior_ai junior_post ai_post junior_ai_post ///
+    imr if has_transition == 1, ///
+    absorb(onet_code transition_ym) cluster(onet_code)
+estimates store heck_occ
+
+
+
+* --- 输出到屏幕确认 ---
+estimates table base_sen heck_sen base_sal heck_sal base_occ heck_occ, ///
+    b(%9.4f) se(%9.4f) stats(N r2)
+
+* --- 导出 Table 1 CSV（带星号）---
+capture file close fh
+file open fh using "$output/table1_mobility_regressions.csv", write replace
+
+file write fh "Variable,Sen_Base,Sen_Base_SE,Sen_Heck,Sen_Heck_SE,"
+file write fh "Sal_Base,Sal_Base_SE,Sal_Heck,Sal_Heck_SE,"
+file write fh "Occ_Base,Occ_Base_SE,Occ_Heck,Occ_Heck_SE" _n
+
+* 核心变量（FE 吸收了 m1 和 post）
+local vars "is_junior junior_ai junior_post ai_post junior_ai_post"
+foreach v of local vars {
+    file write fh "`v'"
+    foreach m in base_sen heck_sen base_sal heck_sal base_occ heck_occ {
+        estimates restore `m'
+        local b = _b[`v']
+        local s = _se[`v']
+        get_stars `b' `s'
+        local st = r(stars)
+        file write fh "," %9.4f (`b') "`st'" "," %9.4f (`s')
+    }
+    file write fh _n
+}
+
+* delta_seniority（只在 salary 模型里）
+file write fh "delta_seniority,,,,"
+estimates restore base_sal
+local b = _b[delta_seniority]
+local s = _se[delta_seniority]
+get_stars `b' `s'
+file write fh "," %9.4f (`b') "`r(stars)'" "," %9.4f (`s')
+estimates restore heck_sal
+local b = _b[delta_seniority]
+local s = _se[delta_seniority]
+get_stars `b' `s'
+file write fh "," %9.4f (`b') "`r(stars)'" "," %9.4f (`s')
+file write fh ",,,," _n
+
+* IMR（只在 Heckman 模型里）
+file write fh "imr,,"
+estimates restore heck_sen
+local b = _b[imr]
+local s = _se[imr]
+get_stars `b' `s'
+file write fh "," %9.4f (`b') "`r(stars)'" "," %9.4f (`s') ",,"
+estimates restore heck_sal
+local b = _b[imr]
+local s = _se[imr]
+get_stars `b' `s'
+file write fh "," %9.4f (`b') "`r(stars)'" "," %9.4f (`s') ",,"
+estimates restore heck_occ
+local b = _b[imr]
+local s = _se[imr]
+get_stars `b' `s'
+file write fh "," %9.4f (`b') "`r(stars)'" "," %9.4f (`s') _n
+
+* N 和 R2（reghdfe 的 R2 是 within R2）
+file write fh "N"
+foreach m in base_sen heck_sen base_sal heck_sal base_occ heck_occ {
+    estimates restore `m'
+    file write fh "," %12.0fc (e(N)) ","
+}
+file write fh _n
+
+file write fh "R-squared"
+foreach m in base_sen heck_sen base_sal heck_sal base_occ heck_occ {
+    estimates restore `m'
+    file write fh "," %9.4f (e(r2)) ","
+}
+file write fh _n
+
+* 标注 FE 结构
+file write fh "Occupation FE,Yes,,Yes,,Yes,,Yes,,Yes,,Yes," _n
+file write fh "Month FE,Yes,,Yes,,Yes,,Yes,,Yes,,Yes," _n
+
+file close fh
+di "=== Table 1 exported to $output/table1_mobility_regressions.csv ==="
+
+
+
+
+
+
+
+
+
+
+
+* ============================================================
+* Part 2: Extensive Margin
+* ============================================================
+
+preserve
+drop if missing(post) | missing(start_ym)
+
+* --- Table 4: 描述性 (appendix) ---
+quietly summarize m1, detail
+gen byte ai_group = .
+replace ai_group = 1 if m1 <= r(p25)
+replace ai_group = 2 if m1 > r(p25) & m1 <= r(p75)
+replace ai_group = 3 if m1 > r(p75) & !missing(m1)
+
+collapse (mean) trans_rate = has_transition (count) n = has_transition, ///
+    by(is_junior ai_group post)
+export delimited using "$output/table4_transition_rates.csv", replace
+di "=== Table 4 exported ==="
+
+restore
+
+* --- Table 2: Extensive margin regressions ---
+preserve
+drop if missing(post) | missing(start_ym)
+
+* Col 1: Full sample
+reghdfe has_transition is_junior junior_ai junior_post ai_post junior_ai_post, ///
+    absorb(onet_code start_ym) cluster(onet_code)
+estimates store ext_full
+
+* Col 2: Robustness（排除 2024.7 后 position）
+gen byte not_too_recent = (startdate < td(01jul2024)) if !missing(startdate)
+reghdfe has_transition is_junior junior_ai junior_post ai_post junior_ai_post ///
+    if not_too_recent == 1, ///
+    absorb(onet_code start_ym) cluster(onet_code)
+estimates store ext_robust
+
+estimates table ext_full ext_robust, b(%9.4f) se(%9.4f) stats(N r2)
+
+* 导出 Table 2 CSV（带星号）
+capture file close fh
+file open fh using "$output/table2_extensive_margin.csv", write replace
+file write fh "Variable,Full_b,Full_se,Robust_b,Robust_se" _n
+
+local vars "is_junior junior_ai junior_post ai_post junior_ai_post"
+foreach v of local vars {
+    estimates restore ext_full
+    local b1 = _b[`v']
+    local s1 = _se[`v']
+    get_stars `b1' `s1'
+    local st1 = r(stars)
+    estimates restore ext_robust
+    local b2 = _b[`v']
+    local s2 = _se[`v']
+    get_stars `b2' `s2'
+    local st2 = r(stars)
+    file write fh "`v'," %9.4f (`b1') "`st1'" "," %9.4f (`s1') "," %9.4f (`b2') "`st2'" "," %9.4f (`s2') _n
+}
+
+* N 和 R2
+estimates restore ext_full
+local n1 = e(N)
+local r1 = e(r2)
+estimates restore ext_robust
+local n2 = e(N)
+local r2val = e(r2)
+file write fh "N," %12.0fc (`n1') ",," %12.0fc (`n2') "," _n
+file write fh "R-squared," %9.4f (`r1') ",," %9.4f (`r2val') "," _n
+file write fh "Occupation FE,Yes,,Yes," _n
+file write fh "Month FE,Yes,,Yes," _n
+
+file close fh
+di "=== Table 2 exported to $output/table2_extensive_margin.csv ==="
+
+restore
+
+di "=== 全部完成 ==="

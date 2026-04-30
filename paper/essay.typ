@@ -107,7 +107,7 @@
   ]
   #v(0.5em)
 
-  _Todo._
+_Aggregate studies of AI's labour market effects consistently report small or null employment impacts at the occupation level. I argue that these results mask offsetting compositional shifts within occupations: AI displaces junior workers whose tasks overlap with AI capabilities while augmenting senior workers whose expertise-intensive tasks are complementary. I formalise this mechanism by extending the expertise framework of Autor and Thompson (2025) to permit within-occupation task specialisation in a partial-equilibrium CES model. Using individual-level UK position data from Revelio Labs matched with LLM exposure scores, I exploit the unanticipated release of ChatGPT in November 2022 as a natural experiment. Occupations with higher AI exposure experience a monotonically increasing decline in the junior hiring share, reaching 11.5 percentage points by 2025. Senior workers in exposed occupations become substantially more mobile, consistent with augmentation raising their market value, while junior workers experience reduced transition opportunities. Conditional on transitioning, juniors in exposed occupations achieve larger seniority gains — an effect robust to Heckman correction, suggesting genuine skill-upgrading._
 
   #v(1fr)
 ]
@@ -136,10 +136,10 @@ The task of the framework of #cite(<Acemoglu2019automation>, form: "prose") pred
 
 I argue that these aggregate null results are not evidence of absence, but rather reflect offsetting compositional shifts within occupations. The central thesis of this essay is that AI displaces junior workers, whose task portfolios overlap heavily with the capabilities of current AI systems, while simultaneously augmenting senior workers, whose expertise-intensive tasks are complementary to AI. Because both groups are classified under the same occupation codes, the displacement of juniors and the entrenchment of seniors partially cancel when measured at the occupation level, producing the observed near-zero aggregate effects. This prediction aligns with a growing body of anecdotal and empirical evidence that firms have sharply curtailed entry-level hiring while increasing demand for — and compensation of — experienced workers #cite(<Canaries_in_the_Coal_Mine>).
 
-I extend the expertise framework of #cite(<NBERw33941>, form: "prose") by relaxing their assumption of within-occupation worker homogeneity. In the resulting partial-equilibrium CES model, junior and senior workers possess comparative advantage in different task types, and AI enters as a factor input that substitutes for junior labour in low-expertise tasks while complementing senior labour through the CES production structure. The model yields four testable predictions: 1. a declining junior employment share in exposed occupations; 2. augmentation of senior workers manifested as reduced mobility; 3. a near-zero net effect at the occupation level; 4. adjustment operating through the quantity margin rather than the wage margin.
+I extend the expertise framework of #cite(<NBERw33941>, form: "prose") by relaxing their assumption of within-occupation worker homogeneity. In the resulting partial-equilibrium CES model, junior and senior workers possess comparative advantage in different task types, and AI enters as a factor input that substitutes for junior labour in low-expertise tasks while complementing senior labour through the CES production structure. The model yields four testable predictions: 1. a declining junior employment share in exposed occupations; 2. augmentation of senior workers manifested as increased outside options; 3. a near-zero net effect at the occupation level; 4. adjustment operating through the quantity margin rather than the wage margin.
 
 
-Measuring the impact of AI is hard. Unlike discrete, large-scale shocks such as the COVID-19 pandemic, constructing a credible counterfactual for the impact of AI on the labour market is particularly challenging, precisely because AI adoption is gradual and diffuse rather than sudden @massenkoffmccrory2026labor. I test these predictions using an individual-level panel of UK workers constructed from Revelio Labs, matched with the AI occupational exposure scores of #cite(<GPTs_are_GPTs>, form: "prose"). This dataset allows me to track workers' career trajectories, seniority transitions, occupation switches, and wage changes before and after the release of ChatGPT in November 2022, exploiting cross-occupation variation in AI exposure intensity. I document a significant decline in the junior share of positions within highly exposed occupations following the AI shock, consistent with displacement. Conditional on remaining employed, junior workers in exposed occupations experience larger seniority gains, suggesting that survivors are positively selected. Senior workers in the same occupations become substantially less mobile, consistent with augmentation increasing the returns to staying. Notably, I find no differential wage effect for junior workers and no evidence of occupation switching in response to AI exposure, indicating that adjustment operates through quantities rather than prices. These findings fill an empirical gap explicitly identified by #cite(<Canaries_in_the_Coal_Mine>, form: "prose") and #cite(<klein2025generative>, form: "prose"), who call for individual-level trajectory analysis to complement their aggregate and firm-level results.
+Measuring the impact of AI is hard. Unlike discrete, large-scale shocks such as the COVID-19 pandemic, constructing a credible counterfactual for the impact of AI on the labour market is particularly challenging, precisely because AI adoption is gradual and diffuse rather than sudden @massenkoffmccrory2026labor. I test these predictions using an individual-level panel of UK workers constructed from Revelio Labs, matched with the AI occupational exposure scores of #cite(<GPTs_are_GPTs>, form: "prose"). This dataset allows me to track workers' career trajectories, seniority transitions, occupation switches, and wage changes before and after the release of ChatGPT in November 2022, exploiting cross-occupation variation in AI exposure intensity. I document a significant decline in the junior share of positions within highly exposed occupations following the AI shock, consistent with displacement. Conditional on remaining employed, junior workers in exposed occupations experience larger seniority gains --- an effect robust to Heckman selection correction, suggesting genuine skill-upgrading. Senior workers in exposed occupations become substantially more mobile, consistent with augmentation raising their market value and expanding outside options. Notably, I find no differential wage effect for junior workers and no evidence of occupation switching in response to AI exposure, indicating that adjustment operates through quantities rather than prices. These findings fill an empirical gap explicitly identified by #cite(<Canaries_in_the_Coal_Mine>, form: "prose") and #cite(<klein2025generative>, form: "prose"), who call for individual-level trajectory analysis to complement their aggregate and firm-level results.
 
 The remainder of this essay proceeds as follows. Section 2 develops the theoretical framework. Section 3 describes the data and identification strategy. Sections 4 presents the empirical results on compositional shifts and career mobility. Section 5 discusses limitations and situates the findings within the broader literature. Section 6 concludes.
 
@@ -213,7 +213,7 @@ _Comparative statics._ An increase in AI capability $A$ produces the following a
 The model generates four predictions that I take to the data:
 
 + *Compositional shift:* In occupations with higher AI exposure, the junior employment share declines following the AI shock, as junior workers are displaced from task $L$ and exit the occupation.
-+ *Senior stability:* Senior workers in high-exposure occupations become more stable, with higher employment or lower transition rates, driven by CES complementarity raising their marginal product.
++ *Senior augmentation:* Senior workers in high-exposure occupations experience rising demand driven by CES complementarity raising their marginal product, which may manifest as higher employment, increased outside options, or both.
 + *Wage adjustment:* Junior wages decline and senior wages rise, though the magnitudes may be small if the occupation-level supply elasticity $epsilon$ is large — a prediction consistent with adjustment occurring primarily through quantities rather than prices.
 + *Aggregate ambiguity:* The net occupation-level employment effect is indeterminate in sign, consistent with the aggregate null results documented in the existing literature.
 
@@ -292,7 +292,7 @@ $ Delta "Seniority"_(i,t) = theta_1 "AI"_o times "Post"_t + theta_2 "Junior"_i t
 
 where $Delta "Seniority"_(i,t)$ is the difference in seniority between the destination and origin positions. The coefficient $theta_2$ captures whether junior workers in high-exposure occupations experience differentially larger seniority gains upon transition in the post period.
 
-The intensive-margin estimates condition on a transition having occurred, which raises a sample selection concern #cite(<Heckman1979>). If workers who transition out of high-exposure occupations after ChatGPT are positively selected on ability, the seniority gains in @eq:intensive will be upward-biased. I address this with a Heckman two-step procedure. The selection equation models the probability of transitioning using the full set of regressors in @eq:intensive plus an exclusion restriction: the pre-period mean separation rate at the worker's origin firm. The logic is straightforward — firms with historically higher turnover generate more transitions mechanically, but once a worker has transitioned, how often people used to leave that firm should not affect the seniority change the worker achieves in the new position. The inverse Mills ratio from the selection equation is then included in the outcome equation to correct for non-random selection into the transition sample.
+The intensive-margin estimates condition on a transition having occurred, which raises a sample selection concern #cite(<Heckman1979>). If the composition of the transition sample changes systematically after ChatGPT --- for example, if weaker junior workers are disproportionately displaced, leaving only stronger workers to transition --- the seniority gains in @eq:intensive may be biased. I address this with a Heckman two-step procedure. The selection equation models the probability of transitioning using the main regressors, occupation fixed effects, and a firm-level exclusion restriction: the pre-period mean separation rate at the worker's origin firm, entered both as a main effect and interacted with junior status. The logic is that firms with historically higher turnover generate more transitions mechanically, but conditional on transitioning, the origin firm's historical separation rate should not affect the seniority change achieved in the new position. The inverse Mills ratio from the selection equation is then included in the outcome equation to correct for non-random selection into the transition sample.
 
 
 // 3.2 Identification Strategy 部分
@@ -333,34 +333,58 @@ The present analysis complements this finding at a finer occupational granularit
   caption: [Monthly junior share of new position starts by AI exposure group. Junior defined as seniority $<= 2$ (Revelio Labs classification). AI exposure median split at 0.366 (#cite(<GPTs_are_GPTs>, form: "prose")). Vertical dashed line marks ChatGPT release (November 2022).]
 ) <fig-junior-share>
 
+To quantify this divergence, I estimate an occupation-level difference-in-differences specification:
 
-To quantify this divergence, I estimate a position-level difference-in-differences specification:
+$ "JuniorShare"_(o,t) = alpha_o + gamma_t + beta dot "AI"_o times "Post"_t + epsilon_(o,t) $
 
-$ "Junior"_i = alpha + beta_1 "AI"_o + beta_2 "Post"_t + beta_3 "AI"_o times "Post"_t + epsilon_i $
+where $"JuniorShare"_(o,t)$ is the share of new positions with seniority level 2 or below in occupation $o$ and half-year $t$, $"AI"_o$ is the continuous AI exposure score, and $"Post"_t$ equals one from 2023H1 onward. Observations are weighted by cell size; standard errors are clustered at the O\*NET occupation level (917 clusters).
 
+#figure(
+  table(
+    columns: (auto, auto, auto, auto, auto),
+    align: (left, center, center, center, center),
+    stroke: none,
+    table.hline(stroke: 0.8pt),
+    table.header(
+      [], [*Coefficient*], [*Std. error*], [*$t$*], [*95% CI*],
+    ),
+    table.hline(stroke: 0.5pt),
+    [$"AI"_o times "Post"_t$], [$-0.077$], [$0.009$], [$-8.37$], [$[-0.095, -0.059]$],
+    table.hline(stroke: 0.8pt),
+  ),
+  caption: [
+    Pooled difference-in-differences estimate. Dependent variable: junior hiring share at the occupation--half-year level, weighted by cell size. Occupation and half-year fixed effects absorbed. Standard errors clustered at the O\*NET code level (917 clusters). $N = 14,587$.
+  ],
+  kind: table,
+) <tab-pooled-did>
 
+The estimated interaction coefficient is $hat(beta) = -0.077$ ($t = -8.37$, $p < 0.001$): after the diffusion of generative AI, occupations with higher exposure experience a disproportionately larger decline in the share of new positions filled by junior workers. A hypothetical shift from zero to full exposure corresponds to a 7.7 percentage-point reduction in the junior share.
 
-where $"Junior"_i$ is an indicator equal to one if position $i$ has seniority level 2 or below, $"AI"_o$ is the continuous AI exposure score of occupation $o$, and $"Post"_t$ equals one for positions starting from January 2023, following #cite(<lichtinger_generative_2025>, form: "prose"), who document that the employment effects of generative AI emerge in the first quarter of 2023. Standard errors are clustered at the O\*NET occupation level (917 clusters). The estimated interaction coefficient is $hat(beta)_3 = -0.087$ ($t = -4.78$, $p < 0.001$): after ChatGPT, occupations with higher AI exposure see a disproportionately larger decline in the share of new positions filled by junior workers. A hypothetical shift from zero to full exposure corresponds to an 8.7 percentage-point reduction; at the median exposure differential, this implies approximately 4.3 percentage points, consistent in magnitude with the firm-level estimates of #cite(<klein2025generative>, form: "prose").
-
-
-
-The pooled DiD estimate, however, assumes that pre-treatment trends in the junior share were parallel across exposure levels. I examine this assumption through a semi-annual event study:
+The pooled estimate, however, assumes that pre-treatment trends in the junior share were parallel across exposure levels. I examine this assumption through a semi-annual event study:
 
 $ "JuniorShare"_(o,t) = alpha_o + gamma_t + sum_(k eq.not 0) beta_k dot "AI"_o dot bb(1)[t = k] + epsilon_(o,t) $ <eq-event-study>
 
-where $alpha_o$ and $gamma_t$ denote occupation and half-year fixed effects, respectively, and the summation runs over all half-year periods with 2022H1 ($k = 0$) as the omitted baseline. This reference period is the last half-year that is both entirely pre-treatment and free from any early adjustment following the unanticipated release of ChatGPT on 30 November 2022. Observations are weighted by cell size.
+where $alpha_o$ and $gamma_t$ denote occupation and half-year fixed effects, respectively, and the summation runs over all half-year periods with 2022H2 ($k = 0$) as the omitted baseline. Although ChatGPT was released on 30 November 2022, I designate 2022H2 rather than 2022H1 as the reference period for two reasons. First, #cite(<lichtinger_generative_2025>, form: "prose") document that firm-level hiring adjustments did not commence until the first quarter of 2023, implying that the final months of 2022 remained behaviourally pre-treatment. Second, the inherent lag between hiring decisions and position start dates — encompassing job posting, interviewing, and onboarding — further delays any compositional response in the Revelio data. The coefficient at 2022H1 ($-0.005$, $p = 0.44$) is statistically indistinguishable from the baseline, providing internal validation of this choice. Observations are weighted by cell size.
 
-@fig-event-study presents the results. The pre-period coefficients ($k = -8$ to $k = -1$, spanning 2018H1 to 2021H2) fluctuate within a narrow band around zero, with no monotonic trend. Most estimates are individually insignificant: only three of the eight pre-period coefficients reach the 5 per cent significance level, and the largest absolute value is 0.017 (2020H2). A mild positive hump is visible during 2019H1–2020H2, plausibly reflecting differential COVID-era hiring in high-AI-exposure occupations, which are disproportionately white-collar and remote-compatible. These fluctuations are transient and subside before the treatment window: the coefficient at $k = -1$ (2021H2) is $-0.007$, statistically indistinguishable from zero. A formal test for a linear pre-trend, implemented by replacing the unrestricted pre-period interactions with a single occupation-specific trend term following #cite(<freyaldenhoven2019>, form: "prose"), yields an estimated slope of essentially zero ($hat(gamma) approx 0$), confirming the absence of a systematic pre-existing divergence.
 
-The post-period tells a sharply different story. The coefficient at 2022H2 — the half-year containing ChatGPT's launch — is $-0.014$, already statistically significant and suggestive of an initial response. From 2023H1 onward, the estimates decline steeply and near-monotonically: $-0.059$  at 2023H1, $-0.096$ at 2024H1, and $-0.126$ by 2025H2. All post-adoption coefficients are significant at the 1 per cent level, with 95 per cent confidence intervals well below zero. The post-period decline is an order of magnitude larger than the pre-period fluctuations and — unlike the pre-period hump — is monotonic and sustained over three years. A quarterly event study (see Appendix @fig-event-study-Quarterly) confirms that the decline begins precisely in 2022Q4–2023Q1, aligning with the onset documented by #cite(<lichtinger_generative_2025>, form: "prose").
+@fig-event-study and @tab-event-study present the results. The pre-period coefficients (2018H1 to 2022H1) fluctuate within a narrow band around zero, with no monotonic trend. A mild positive hump is visible during 2019H2–2020H2, plausibly reflecting differential COVID-era hiring in high-AI-exposure occupations, which are disproportionately white-collar and remote-compatible. These fluctuations are transient and subside before the treatment window: the coefficient at 2022H1 is $-0.005$, statistically indistinguishable from the baseline. A formal test for a linear pre-trend, implemented by replacing the unrestricted pre-period interactions with a single occupation-specific trend term following #cite(<freyaldenhoven2019>, form: "prose"), yields an estimated slope of essentially zero, confirming the absence of a systematic pre-existing divergence.
+
+The post-period tells a sharply different story. From 2023H1 onward, the estimates decline steeply: $-0.064$ at 2023H1, $-0.103$ at 2024H1, and $-0.115$ by 2025H2. All post-period coefficients are significant at the 1 per cent level, with 95 per cent confidence intervals well below zero. The decline is an order of magnitude larger than the pre-period fluctuations and — unlike the pre-period hump — is sustained over three years.  A quarterly event study (see Appendix @fig-event-study-Quarterly) confirms that the decline begins precisely in 2022Q4–2023Q1, aligning with the onset documented by #cite(<lichtinger_generative_2025>, form: "prose").
 
 #figure(
-  image("../output/figures/event_study_half_2022H1.png", width: 95%),
-  caption: [Event study: effect of AI exposure on junior share of new position starts. Each point represents the estimated coefficient $hat(beta)_k$ from @eq-event-study.]
+  image("../output/figures/event_study_baseline.png", width: 95%),
+  caption: [Event study: effect of AI exposure on junior share of new position starts. Each point represents the estimated coefficient $hat(beta)_k$ from @eq-event-study. Baseline period: 2022H2. Standard errors clustered at the O\*NET code level; shaded area shows 95% confidence interval.]
 ) <fig-event-study>
 
-In summary, high-AI-exposure occupations experienced a sustained and statistically significant decline in the junior share of new hires following the diffusion of generative AI. By 2025H2, the estimated effect reaches approximately 13 percentage points for a fully exposed occupation. The magnitude of the post-period break, its monotonic trajectory, and its precise temporal alignment with the diffusion of generative AI collectively support a causal interpretation, notwithstanding the minor pre-period fluctuations. This compositional shift raises a natural follow-up question: what happens to the junior workers who would otherwise have entered these occupations?
+In summary, high-AI-exposure occupations experienced a sustained and statistically significant decline in the junior share of new hires following the diffusion of generative AI. By 2025H2, the estimated effect reaches approximately 11.5 percentage points for a fully exposed occupation. The magnitude of the post-period break, its monotonic trajectory, and its precise temporal alignment with the diffusion of generative AI collectively support a causal interpretation, notwithstanding the minor pre-period fluctuations. This compositional shift raises a natural follow-up question: what happens to the junior workers who would otherwise have entered these occupations?
 
+
+=== Robustness Check
+
+
+I assess the sensitivity of the compositional shift results to alternative specifications, with full details reported in @B. Replacing the primary AI exposure measure with the AI Occupational Exposure index of #cite(<felten2021occupational>, form: "prose") yields a standardised coefficient of $-0.018$ ($t = -5.33$), close to the baseline estimate of $-0.021$. The result also holds under a binary treatment specification: high-exposure occupations experience a 3.9 percentage-point larger decline in the junior share relative to low-exposure occupations. The AI Applicability Score of #cite(<tomlinson2025working>, form: "prose"), which captures observed Copilot usage rather than theoretical task exposure, produces a smaller and statistically insignificant estimate. This is not unexpected. The identification strategy relies on pre-determined theoretical exposure interacted with the ChatGPT shock, and a usage-based measure introduces additional variation from adoption frictions — differences in how quickly firms actually deploy AI tools — that attenuates the estimated relationship.
+
+Varying the seniority threshold reveals that the effect is concentrated at the junior--senior boundary. The coefficient is statistically insignificant when junior status is restricted to seniority level 1 alone, strongest at the baseline cutoff of $lt.eq 2$, and attenuated when expanded to $lt.eq 3$. This pattern suggests that seniority level 2 workers — those who perform substantive but routine cognitive tasks without the expertise needed to pivot toward complementary functions — constitute the primary margin of displacement.
 
 
 
@@ -375,57 +399,71 @@ In this section, I turn to the analysis of career mobility, with particular emph
 
 For each transition, I construct outcome variables capturing the change in seniority level, the log wage change ($Delta ln w$), and an indicator for whether the worker switched O\*NET occupation code. The core specification throughout is a triple-difference model:
 
-$ Y_i = beta_1 "Junior"_i + beta_2 "Junior"_i times "AI"_o +  beta_3 "Junior"_i times "Post"_t \ + beta_4 "AI"_o times "Post"_t + beta_5 "Junior"_i times "AI"_o times "Post"_t + alpha_o + gamma_t + epsilon_i $
+$ Y_i = beta_1 "Junior"_i + beta_2 "Junior"_i times "AI"_o + beta_3 "Junior"_i times "Post"_t \ + beta_4 "AI"_o times "Post"_t + beta_5 "Junior"_i times "AI"_o times "Post"_t + alpha_o + gamma_t + epsilon_i $
 
-
+where $alpha_o$ and $gamma_t$ denote occupation and month fixed effects, respectively. The main effects of $"AI"_o$ and $"Post"_t$ are absorbed by the fixed effects and omitted.
 
 === Extensive Margin: Who Moves?
 
-@tab:transition reports results from the extensive-margin analysis. Using the full sample of 27.5 million positions (including those without a subsequent transition), I estimate the triple-difference specification with an indicator for whether a transition is observed as the dependent variable. The estimate of $beta_6$ is $-0.373$, indicating that senior workers in high-exposure occupations became substantially less mobile after ChatGPT, consistent with AI augmenting role-specific expertise and strengthening attachment to current positions. The triple-interaction term $beta_7 = 0.228$ is positive and highly significant: relative to senior workers, junior workers in the same high-exposure occupations experienced a considerably smaller decline in transition probability. That is, while all workers in high-AI-exposure occupations became less mobile, this stabilisation was concentrated among senior workers; junior workers remained comparatively more exposed to turnover. The result is robust to excluding positions that began after July 2024 ($beta_7 = 0.229$), ruling out mechanical right-censoring as a driver.
+@tab:transition reports results from the extensive-margin analysis. Using the full sample of 27.5 million positions (including those without a subsequent transition), I estimate the triple-difference specification with an indicator for whether a transition is observed as the dependent variable. The estimate of $beta_4$ is $0.548$, indicating that senior workers in high-exposure occupations became substantially _more_ mobile after ChatGPT. This is consistent with AI augmenting senior workers' expertise, thereby raising their market value and generating increased demand from competing employers. The triple-interaction term $beta_5 = -0.660$ is negative and highly significant: relative to senior workers, junior workers in the same high-exposure occupations experienced a substantially _smaller_ increase in transition probability. The net effect for junior workers ($beta_4 + beta_5 approx -0.11$) is negative, implying that juniors in high-AI-exposure occupations became less mobile after ChatGPT while their senior counterparts became more so. This asymmetry is consistent with the model's predictions: AI raises the returns to senior expertise, expanding their outside options, while simultaneously narrowing the opportunities available to junior workers whose tasks overlap with AI capabilities. The result is robust to excluding positions that began after July 2024 ($beta_5 = -0.662$), ruling out mechanical right-censoring as a driver.
 
-#include "../output/tables/table_extensive_margin.typ"
+#include "../output/tables/table2_extensive_margin.typ"
+
+
+
 
 
 === Intensive Margin: Transition Outcomes
 
-Conditional on transitioning, Column (1) of @tab:mobility shows that junior workers leaving high-exposure occupations after ChatGPT gain significantly more seniority in their next position ($beta_7 = 0.124$). However, this estimate is susceptible to positive selection: if AI disproportionately displaces weaker junior workers, those who successfully transition constitute a positively selected subsample, and the observed seniority gain overstates any genuine upskilling effect.
+Conditional on transitioning, Column (1) of @tab:mobility shows that junior workers leaving high-exposure occupations after ChatGPT gain significantly more seniority in their next position ($beta_5 = 0.122$). This estimate is susceptible to a selection concern: if AI disproportionately displaces weaker junior workers, those who successfully transition constitute a positively selected subsample, and the observed seniority gain may overstate any genuine upskilling effect.
 
-To address this concern, I implement a #cite(<Heckman1979>, form: "prose") two-step correction. The selection equation models the probability of transitioning as a function of the main regressors and a firm-level exclusion restriction: the pre-period separation rate at the individual's company, which plausibly affects whether a worker transitions but not the characteristics of the destination position. The probit is estimated on a 10 per cent random subsample for computational tractability, and the resulting inverse Mills ratio is included in the outcome equation estimated on the full sample.#footnote[The probit is estimated on observations where $"mod"("user_id", 10) = 0$. Coefficients are used to compute the linear index and the Mills ratio for all observations. Results are virtually identical when estimated on alternative subsamples ($"mod" = 1, 2, dots$).]
+To address this concern, I implement a #cite(<Heckman1979>, form: "prose") two-step correction. The selection equation models the probability of transitioning as a function of the main regressors, occupation fixed effects, and a firm-level exclusion restriction: the pre-period mean separation rate at the individual's company, entered both as a main effect and interacted with junior status.#footnote[The exclusion restriction logic is that firms with historically higher turnover generate more transitions mechanically, but conditional on transitioning, the origin firm's historical separation rate should not affect the seniority change achieved in the new position. The interaction with junior status allows the relationship between firm turnover and transition probability to differ across seniority groups.] The separation rate is a strong predictor of transitions in the first stage ($z = 343$). The probit is estimated on a 10 per cent random subsample for computational tractability, and the resulting inverse Mills ratio is included in the outcome equation estimated on the full sample.#footnote[The probit is estimated on observations where $"mod"("user_id", 10) = 0$, yielding approximately 2.7 million observations. The standard errors in the corrected specifications do not incorporate the Murphy--Topel adjustment for generated-regressor uncertainty. Because the first-stage sample is large, estimation error in the probit coefficients is negligible relative to second-stage sampling variability.]
 
-Column (2) reports the corrected estimates. The inverse Mills ratio is significant ($hat(lambda) = -0.174$), confirming that workers with lower predicted transition probability tend to experience smaller seniority gains conditional on transitioning — that is, positive selection into the transition sample is present. After correction, $beta_7$ declines from 0.124 to 0.061, significant only at the 10 per cent level. This approximately 50 per cent reduction indicates that a substantial share of the observed seniority gain reflects compositional upgrading of the transition pool rather than a genuine treatment effect. Nevertheless, both interpretations reinforce the central thesis. If the effect is genuine, AI facilitates upward mobility for capable junior workers. If it reflects selection, AI filters out weaker junior workers from high-exposure occupations. Either channel implies that within-occupation composition shifts in the direction predicted by the model.
+Column (2) reports the corrected estimates. The inverse Mills ratio is significant and negative ($hat(lambda) = -0.129$), indicating that workers with higher unobserved propensity to transition tend to experience _smaller_ seniority gains upon moving --- a pattern of negative selection on the outcome dimension. Crucially, however, the triple-interaction term is virtually unchanged after correction ($beta_5 = 0.125$, compared with $0.122$ in the baseline). The Heckman correction thus confirms that selection into the transition sample does not contaminate the estimated treatment effect once occupation and time fixed effects are included. The seniority gain for junior workers in high-AI-exposure occupations after ChatGPT appears to reflect genuine skill-upgrading --- AI tools facilitate faster competency acquisition for capable junior workers --- rather than compositional upgrading of the transition pool through selective attrition.
 
-Columns (3) and (4) examine log wage changes upon transition. The triple-interaction term $beta_7$ is essentially zero and statistically insignificant, indicating that junior workers are not differentially penalised in wage terms relative to senior workers. The adjustment mechanism thus operates primarily through the quantity margin — who remains in and who exits the occupation — rather than through differential wage compression.
+Columns (3) and (4) examine log wage changes upon transition, controlling for the change in seniority level to isolate wage effects net of promotion-related gains. The triple-interaction term $beta_5$ is essentially zero and statistically insignificant ($0.007$, $t = 0.51$), indicating that junior workers are not differentially penalised in wage terms relative to senior workers. The coefficient on $"AI"_o times "Post"_t$ is negative and significant ($-0.111$), suggesting that transitions originating from high-exposure occupations are associated with lower wage growth overall, but this effect does not differ by seniority. The adjustment mechanism thus operates primarily through the quantity margin --- who remains in and who exits the occupation --- rather than through differential wage compression.
 
-Columns (5) and (6) examine occupational switching. The triple-interaction term is small and insignificant ($beta_7 = -0.015$, $t = -1.00$ in the baseline). Junior workers do not systematically reallocate toward lower-AI-exposure occupations after ChatGPT. This null result is informative: the post-ChatGPT adjustment in career mobility operates along the seniority dimension rather than through occupational flight. Workers who transition move to positions of comparable AI exposure but at higher seniority — a pattern more consistent with upward filtering within related occupations than with wholesale retreat from AI-exposed work.
+Columns (5) and (6) examine occupational switching. The triple-interaction term is small and insignificant ($beta_5 = -0.008$, $t = -0.61$ in the baseline). Junior workers do not systematically reallocate toward lower-AI-exposure occupations after ChatGPT. This null result is informative: the post-ChatGPT adjustment in career mobility operates along the seniority dimension rather than through occupational flight. Workers who transition move to positions of comparable AI exposure but at higher seniority --- a pattern more consistent with upward filtering within related occupations than with wholesale retreat from AI-exposed work.
 
 #include "../output/tables/table1_mobility_regressions.typ"
 
-== Robustness Check
-
-The AI exposure measure employed in the main analysis is just one of several indices in their different underlying methodology and emphasis. I adopt the scores from #cite(<GPTs_are_GPTs>,form: "author") as the primary measure owing to their widespread adoption in the recent literature. In this subsection, I apply two another indices, one is from #cite(<felten2021occupational>,form: "prose") and another is from 
 
 
 
+///
+/// 
+/// Discussion
+/// 
+/// 
 = Discussion
+A natural question arising from the results is why wages do not move in the directions predicted by the theoretical framework. One important caveat is that the salary data from Revelio Labs are predicted values, imputed from job titles, locations, and company characteristics, rather than actual reported compensation. This introduces classical measurement error that attenuates estimated coefficients toward zero. It is worth noting that #cite(<lichtinger_generative_2025>, form: "prose"), who draw on the same Revelio Labs data infrastructure, do not report any wage-based analysis — which may itself reflect an awareness of this limitation. But even setting measurement error aside, the null wage result is consistent with the model under high labour supply elasticity $epsilon$. When supply is elastic, demand shocks are absorbed primarily through changes in quantities — who gets hired and who leaves — rather than through wage adjustment. The compositional shifts documented in Section 4, where junior hiring shares decline and senior workers gain expanded outside options, are precisely the quantity-margin responses the model predicts when $epsilon$ is large.
 
-#text(fill: blue)[4.7: Discussion 部分仍然是想到哪写到哪，后期需要系统地进行整理和补充]
+The Heckman correction in the mobility analysis provides a further window into mechanisms. The inverse Mills ratio is negative and significant ($hat(lambda) = -0.129$), indicating that workers with higher unobserved propensity to transition tend to experience smaller seniority gains upon moving. In the standard parameterisation, this implies negative selection on the outcome dimension: the unobservables that make a worker more likely to transition are associated with _worse_, not better, destination matches. The key finding, however, is that the triple-interaction coefficient is virtually unchanged after correction ($0.125$ versus $0.122$ in the baseline). This stability indicates that, once occupation and time fixed effects absorb cross-occupation heterogeneity, selection into the transition sample does not contaminate the estimated treatment effect. The preferred interpretation is therefore one of genuine skill-upgrading: AI tools help capable junior workers in exposed occupations build competencies faster, enabling larger seniority gains upon transition. The occupation-switching null reinforces this reading — junior workers in high-exposure occupations are not fleeing to unrelated fields but moving upward within the same occupational domain.
 
-Notice that research on the impact of AI on labour markets is still in its infancy, and there are many open questions about the mechanisms through which AI affects workers. One important argument is that we still couldn't find a consistent and convincing exposure measure for AI, which is crucial for empirical analysis. The most recent commonly used measurements can't broadly agree with each other on highly exposed occupations, making it hard to draw robust conclusions about the impact of AI on labour markets @gimbel2026labor.
+The extensive-margin results merit further discussion. Senior workers in high-AI-exposure occupations become substantially more mobile after ChatGPT, while the net effect for junior workers is negative. One natural concern is whether increased senior mobility is consistent with the model's prediction that senior employment rises ($partial n_S slash partial A > 0$). The model predicts that AI raises senior wages via CES complementarity, which increases the quantity of senior labour supplied to the occupation. Higher market value, however, also generates poaching demand from other employers, raising gross transition rates even as net occupational employment grows. The extensive-margin estimate captures gross flows, not net stocks; it is therefore consistent with senior augmentation provided that inflows match or exceed outflows. Direct measurement of net senior headcount changes at the occupation level would provide a sharper test, but lies beyond the scope of the present data.
 
+A broader concern for this literature is the lack of consensus on how to measure occupational exposure to AI. #cite(<gimbel2026labor>, form: "prose") document that the most widely used indices — including those of #cite(<GPTs_are_GPTs>, form: "prose"), #cite(<felten2021occupational>, form: "prose"), and #cite(<webbImpactArtificialIntelligence>, form: "prose") — disagree substantially on which occupations are most exposed, reflecting differences in whether exposure is defined through task descriptions, technical benchmarks, or patent-based measures. This motivates my use of three methodologically distinct indices: the primary LLM exposure score based on expert and GPT-4 assessment of task-level automation potential, the AI Occupational Exposure index derived from mapping AI capabilities to occupational abilities, and the AI Applicability Score constructed from revealed usage patterns in real-world AI interactions. If the main findings hold across all three, this substantially strengthens the confidence that the results are not driven by a particular measurement choice. A separate data limitation concerns the representativeness of the Revelio Labs sample. Because the data are drawn from public LinkedIn profiles, the sample likely over-represents white-collar, professional occupations relative to the working population as a whole. Since LLM exposure is concentrated in precisely such occupations, this sample composition may amplify the estimated effects relative to what a nationally representative survey would yield.
 
+Finally, as noted in Section 3, the seniority threshold separating junior from senior workers is held fixed throughout the analysis, yet AI may itself reshape expertise requirements within occupations, shifting this boundary endogenously over time. Modelling such a response would require the between-occupation general equilibrium framework of #cite(<NBERw33941>, form: "prose") and is left for future work. More broadly, the estimates presented here capture the early stages of generative AI diffusion. The capabilities of the technology are expanding rapidly — from text-based assistance toward autonomous task execution — and the occupational task bundles that define current exposure scores may not remain stable as these capabilities evolve. Whether the compositional shifts documented in this essay persist, intensify, or reverse as firms and workers adapt over a longer horizon remains an open question, and one that longer post-treatment panels will be well placed to address.
 
-这是一个有意识的简化。如果你想在 Discussion 里提一句，可以说"the model treats the junior-senior boundary as exogenous; in practice, AI tools may endogenously shift expertise thresholds within occupations, a channel explored at the between-occupation level by Autor and Thompson (2025) but left for future within-occupation analysis." 这样既展示你意识到了这个 limitation，又合理地界定了你模型的 scope。
-
-
-== Why Wage Prediction "Fails"?
-
-
-
-
-
+///
+/// 
+/// Conclusion
+/// 
+/// 
 = Conclusion
 
-或许就像是#cite(<NBERc15315>, form: "prose") 中描绘的美好愿景一样，我们将不再是推动世界前行的引擎，我们的劳作仅仅是高昂算力的暂时替代品。未来的社会必须直面的终极课题便是，当算力掌控了几乎所有的财富源泉之后，被挤出的不再只是Junior, 我们该如何通过类似于全民收入计划的行动来分配 AI 带来的红利，还是说我们将纵容财富不断集中，让它掌握在最“senior” 的一部分人手上呢？
+
+This essay has argued that aggregate null results for AI's employment effects conceal meaningful compositional shifts within occupations. Extending the expertise framework of #cite(<NBERw33941>, form: "prose") to permit within-occupation task specialisation, I derive predictions for how AI capability improvements differentially affect junior and senior workers, and test these predictions using individual-level data from the UK labour market. The evidence is consistent with the model's core mechanism: in occupations more exposed to large language models, the junior hiring share declines, senior workers become substantially more mobile as augmentation raises their market value, and those juniors who do transition achieve larger seniority gains --- an effect robust to Heckman selection correction, consistent with genuine skill-upgrading. Wage effects, by contrast, are absent, consistent with adjustment operating through quantities rather than prices.
+
+These findings carry a subtler implication. Much of the public debate frames AI as a threat to entire occupations or skill groups. The evidence here suggests a different pattern: AI reshapes _who does the work within an occupation_ before it reshapes _whether the occupation exists_. If this pattern generalises, then the workers most immediately affected are not those in "threatened occupations" but those at the bottom of the ladder within occupations that are, on the whole, thriving. This is a form of displacement that aggregate statistics are poorly equipped to detect, and that conventional policy responses — retraining workers for different occupations — are poorly designed to address. The more relevant question may be how firms and institutions restructure entry-level pathways when the tasks that once served as training grounds are increasingly performed by machines.
+
+Whether these early compositional shifts prove transitory or permanent, and whether the expertise threshold itself adapts in response, are questions that longer post-treatment data will help resolve. But if displacement does begin at the junior level, as the evidence here suggests, the implications extend beyond the immediately affected workers. Every senior professional was once a junior one; entry-level positions have traditionally served as the channel through which new labour market entrants acquire occupation-specific skills and progress toward independent judgment. A sustained contraction of this channel would warrant attention from policymakers and educational institutions, not because entire occupations are disappearing, but because the pathway into them is narrowing.
+
+
+
+
+
 
 // ============================================================
 //  REFERENCES
@@ -604,13 +642,93 @@ Conversely, junior displacement dominates ($partial N slash partial A < 0$) when
 
 = Robustness Check<B>
 
-I also use data set from Quarterly Labour Force Survey by UK government. And I am also aware that the dataset itself exists.
+== Summary of Alternative Specifications
 
-这一步不确定会不会做，待定。
+#figure(
+  table(
+    columns: (auto, auto, auto, auto, auto, auto),
+    align: (left, left, center, center, center, center),
+    stroke: none,
+    table.hline(stroke: 0.8pt),
+    table.header(
+      [*Specification*], [*Treatment*], [*Junior def.*],
+      [*Coefficient*], [*Std. error*], [*$N$*],
+    ),
+    table.hline(stroke: 0.5pt),
+    [Main],            [z(Eloundou)],      [$lt.eq 2$], [$-0.021^(***)$], [$(0.002)$], [14,587],
+    [R1: Felten],      [z(Felten)],        [$lt.eq 2$], [$-0.018^(***)$], [$(0.003)$], [14,227],
+    [R2: Tomlinson],   [z(Tomlinson)],     [$lt.eq 2$], [$-0.005$], [$(0.003)$], [14,227],
+    [R3: Seniority 1], [z(Eloundou)],      [$lt.eq 1$], [$-0.003$], [$(0.003)$], [14,587],
+    [R4: Seniority 3], [z(Eloundou)],      [$lt.eq 3$], [$-0.009^(***)$], [$(0.003)$], [14,587],
+    [R5: Binary],      [Binary(Eloundou)], [$lt.eq 2$], [$-0.039^(***)$], [$(0.005)$], [14,587],
+    table.hline(stroke: 0.8pt),
+  ),
+  caption: [
+    Robustness of the pooled difference-in-differences estimate for the junior hiring share. All continuous treatment variables are standardised to have zero mean and unit standard deviation at the occupation level. The dependent variable is the mean junior share within each occupation--half-year cell, weighted by cell size. Standard errors in parentheses, clustered at the O\*NET code level.  $*** p < 0.01$.
+  ],
+  kind: table,
+) <tab-robustness>
+
+#set text(size: 8pt)
+_Notes._ The baseline period is 2022H2. "z(·)" denotes the occupation-level z-score of the indicated measure. R1 uses the AI Occupational Exposure index of Felten, Raj and Seamans (2021). R2 uses the AI Applicability Score of Tomlinson et al. (2025). R5 defines high exposure as above-median Eloundou et al. (2024) score.
+#set text(size: 12pt)
 
 
-= More Evidence from Empirical Analysis
-== Event study at quarterly frequency
+#figure(
+  grid(
+    columns:2,
+    column-gutter: 1em,
+    row-gutter: 1em,
+    image("../output/figures/rob_es_m2.png"),
+    image("../output/figures/rob_es_m3.png"),
+    image("../output/figures/rob_es_sen1.png"),
+    image("../output/figures/rob_es_sen3.png"),
+    image("../output/figures/rob_es_binary.png")
+  ),
+  caption: [Robustness Check under different AI Exposure Measure and Different Junior Category Specification]
+) <fig-rob>
+
+
+
+= Other Statistics
+
+#figure(
+  table(
+    columns: (auto, auto, auto, auto),
+    align: (left, center, center, center),
+    stroke: none,
+    table.hline(stroke: 0.8pt),
+    table.header(
+      [*Period*], [*$hat(beta)_k$*], [*95% CI lower*], [*95% CI upper*],
+    ),
+    table.hline(stroke: 0.5pt),
+    [2018H1], [$-0.023$], [$-0.045$], [$-0.001$],
+    [2018H2], [$space.thin 0.000$], [$-0.014$], [$space.thin 0.014$],
+    [2019H1], [$space.thin 0.005$], [$-0.011$], [$space.thin 0.020$],
+    [2019H2], [$space.thin 0.018$], [$space.thin 0.006$], [$space.thin 0.030$],
+    [2020H1], [$space.thin 0.012$], [$-0.008$], [$space.thin 0.032$],
+    [2020H2], [$space.thin 0.024$], [$space.thin 0.008$], [$space.thin 0.039$],
+    [2021H1], [$space.thin 0.003$], [$-0.013$], [$space.thin 0.018$],
+    [2021H2], [$space.thin 0.007$], [$-0.001$], [$space.thin 0.015$],
+    [2022H1], [$-0.005$], [$-0.018$], [$space.thin 0.008$],
+    table.hline(stroke: 0.3pt),
+    [*2022H2*], [*0*], [], [],
+    table.hline(stroke: 0.3pt),
+    [2023H1], [$-0.064$], [$-0.090$], [$-0.038$],
+    [2023H2], [$-0.062$], [$-0.082$], [$-0.043$],
+    [2024H1], [$-0.103$], [$-0.136$], [$-0.071$],
+    [2024H2], [$-0.098$], [$-0.124$], [$-0.072$],
+    [2025H1], [$-0.114$], [$-0.151$], [$-0.077$],
+    [2025H2], [$-0.115$], [$-0.150$], [$-0.080$],
+    table.hline(stroke: 0.8pt),
+  ),
+  caption: [
+    Event study coefficients from @eq-event-study. The dependent variable is the junior hiring share at the occupation--half-year level, weighted by cell size. The omitted baseline is 2022H2. Standard errors clustered at the O\*NET code level (917 clusters).
+  ],
+  kind: table,
+) <tab-event-study>
+
+
 
 
 #figure(
