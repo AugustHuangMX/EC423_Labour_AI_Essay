@@ -64,6 +64,9 @@ program define get_stars, rclass
 end
 
 use "$clean/transitions_clean.dta", clear
+* extensive margin 用的时间 FE 变量（每个 position 的 start month）
+gen int start_ym = mofd(startdate)
+format start_ym %tm
 
 * ============================================================
 * Part 3（先跑）: 描述性统计
@@ -76,17 +79,17 @@ preserve
 keep if has_transition
 
 * 全样本
-tabstat delta_seniority delta_log_salary ai_exposure salary occ_switch, ///
+tabstat delta_seniority delta_log_salary m1 salary occ_switch, ///
     stat(n mean sd p25 p50 p75) columns(statistics) save
 matrix A = r(StatTotal)
 
 * Junior
-tabstat delta_seniority delta_log_salary ai_exposure salary occ_switch ///
+tabstat delta_seniority delta_log_salary m1 salary occ_switch ///
     if is_junior == 1, stat(n mean sd p25 p50 p75) columns(statistics) save
 matrix B = r(StatTotal)
 
 * Senior
-tabstat delta_seniority delta_log_salary ai_exposure salary occ_switch ///
+tabstat delta_seniority delta_log_salary m1 salary occ_switch ///
     if is_junior == 0, stat(n mean sd p25 p50 p75) columns(statistics) save
 matrix C = r(StatTotal)
 
@@ -108,16 +111,16 @@ restore
 
 * --- 1a: 构建公司级 separation rate ---
 gen byte pre_period = (startdate < td(01nov2022)) if !missing(startdate)
-bysort rcid: egen float firm_n_pre = total(pre_period == 1) 
-bysort rcid: egen float firm_trans_pre = total(pre_period == 1 & has_transition == 1)
+bysort company_id: egen float firm_n_pre = total(pre_period == 1) 
+bysort company_id: egen float firm_trans_pre = total(pre_period == 1 & has_transition == 1)
 gen float firm_sep_rate = firm_trans_pre / firm_n_pre if firm_n_pre > 0
 drop firm_n_pre firm_trans_pre pre_period
 
 * --- 生成交互项 ---
-gen float junior_ai = is_junior * ai_exposure
+gen float junior_ai = is_junior * m1
 gen byte junior_post = is_junior * post
-gen float ai_post = ai_exposure * post
-gen float junior_ai_post = is_junior * ai_exposure * post
+gen float ai_post = m1 * post
+gen float junior_ai_post = is_junior * m1 * post
 gen float firm_sep_junior = firm_sep_rate * is_junior
 
 * 对没有 transition 的 position，用 startdate 判断 post
@@ -125,69 +128,62 @@ replace post = (startdate >= td(01nov2022)) if missing(post) & !missing(startdat
 
 * 重新生成交互项
 replace junior_post = is_junior * post
-replace ai_post = ai_exposure * post
-replace junior_ai_post = is_junior * ai_exposure * post
+replace ai_post = m1 * post
+replace junior_ai_post = is_junior * m1 * post
 
 * --- 1b: Probit on 10% sample → IMR ---
-preserve
-keep if mod(user_id, 10) == 0
+gen byte probit_sample = (mod(user_id, 10) == 0)
+egen int onet_num = group(onet_code)
+probit has_transition is_junior junior_ai junior_post ai_post junior_ai_post ///
+    firm_sep_rate firm_sep_junior i.onet_num ///
+    if probit_sample == 1
 
-probit has_transition is_junior ai_exposure post ///
-    junior_ai junior_post ai_post junior_ai_post ///
-    firm_sep_rate firm_sep_junior
-
-tempfile probit_est
-estimates save `probit_est'
-restore
-
-estimates use `probit_est'
-
-gen double xb = _b[_cons] + _b[is_junior]*is_junior + _b[ai_exposure]*ai_exposure ///
-    + _b[post]*post + _b[junior_ai]*junior_ai + _b[junior_post]*junior_post ///
-    + _b[ai_post]*ai_post + _b[junior_ai_post]*junior_ai_post ///
-    + _b[firm_sep_rate]*firm_sep_rate + _b[firm_sep_junior]*firm_sep_junior
-
+* predict 对全样本（含 probit_sample == 0）自动计算 xb
+predict double xb, xb
 gen double imr = normalden(xb) / normal(xb) if has_transition == 1
+drop probit_sample
 
-* --- 1c: Outcome regressions ---
+* --- 1c: Outcome regressions（with occupation × month FE）---
 
 * Baseline: delta_seniority
-reg delta_seniority is_junior ai_exposure post ///
-    junior_ai junior_post ai_post junior_ai_post ///
-    if has_transition == 1 & !missing(imr), vce(cluster onet_code)
+reghdfe delta_seniority is_junior junior_ai junior_post ai_post junior_ai_post ///
+    if has_transition == 1 & !missing(imr), ///
+    absorb(onet_code transition_ym) cluster(onet_code)
 estimates store base_sen
 
 * Heckman: delta_seniority
-reg delta_seniority is_junior ai_exposure post ///
-    junior_ai junior_post ai_post junior_ai_post ///
-    imr if has_transition == 1, vce(cluster onet_code)
+reghdfe delta_seniority is_junior junior_ai junior_post ai_post junior_ai_post ///
+    imr if has_transition == 1, ///
+    absorb(onet_code transition_ym) cluster(onet_code)
 estimates store heck_sen
 
 * Baseline: delta_log_salary
-reg delta_log_salary is_junior ai_exposure post ///
-    junior_ai junior_post ai_post junior_ai_post ///
+reghdfe delta_log_salary is_junior junior_ai junior_post ai_post junior_ai_post ///
     delta_seniority ///
-    if has_transition == 1 & bad_salary_transition == 0 & !missing(imr), vce(cluster onet_code)
+    if has_transition == 1 & bad_salary_transition == 0 & !missing(imr), ///
+    absorb(onet_code transition_ym) cluster(onet_code)
 estimates store base_sal
 
 * Heckman: delta_log_salary
-reg delta_log_salary is_junior ai_exposure post ///
-    junior_ai junior_post ai_post junior_ai_post ///
+reghdfe delta_log_salary is_junior junior_ai junior_post ai_post junior_ai_post ///
     delta_seniority imr ///
-    if has_transition == 1 & bad_salary_transition == 0, vce(cluster onet_code)
+    if has_transition == 1 & bad_salary_transition == 0, ///
+    absorb(onet_code transition_ym) cluster(onet_code)
 estimates store heck_sal
 
 * Baseline: occ_switch
-reg occ_switch is_junior ai_exposure post ///
-    junior_ai junior_post ai_post junior_ai_post ///
-    if has_transition == 1 & !missing(imr), vce(cluster onet_code)
+reghdfe occ_switch is_junior junior_ai junior_post ai_post junior_ai_post ///
+    if has_transition == 1 & !missing(imr), ///
+    absorb(onet_code transition_ym) cluster(onet_code)
 estimates store base_occ
 
 * Heckman: occ_switch
-reg occ_switch is_junior ai_exposure post ///
-    junior_ai junior_post ai_post junior_ai_post ///
-    imr if has_transition == 1, vce(cluster onet_code)
+reghdfe occ_switch is_junior junior_ai junior_post ai_post junior_ai_post ///
+    imr if has_transition == 1, ///
+    absorb(onet_code transition_ym) cluster(onet_code)
 estimates store heck_occ
+
+
 
 * --- 输出到屏幕确认 ---
 estimates table base_sen heck_sen base_sal heck_sal base_occ heck_occ, ///
@@ -201,7 +197,8 @@ file write fh "Variable,Sen_Base,Sen_Base_SE,Sen_Heck,Sen_Heck_SE,"
 file write fh "Sal_Base,Sal_Base_SE,Sal_Heck,Sal_Heck_SE,"
 file write fh "Occ_Base,Occ_Base_SE,Occ_Heck,Occ_Heck_SE" _n
 
-local vars "is_junior ai_exposure post junior_ai junior_post ai_post junior_ai_post"
+* 核心变量（FE 吸收了 m1 和 post）
+local vars "is_junior junior_ai junior_post ai_post junior_ai_post"
 foreach v of local vars {
     file write fh "`v'"
     foreach m in base_sen heck_sen base_sal heck_sal base_occ heck_occ {
@@ -247,18 +244,7 @@ local s = _se[imr]
 get_stars `b' `s'
 file write fh "," %9.4f (`b') "`r(stars)'" "," %9.4f (`s') _n
 
-* Constant
-file write fh "_cons"
-foreach m in base_sen heck_sen base_sal heck_sal base_occ heck_occ {
-    estimates restore `m'
-    local b = _b[_cons]
-    local s = _se[_cons]
-    get_stars `b' `s'
-    file write fh "," %9.4f (`b') "`r(stars)'" "," %9.4f (`s')
-}
-file write fh _n
-
-* N 和 R2
+* N 和 R2（reghdfe 的 R2 是 within R2）
 file write fh "N"
 foreach m in base_sen heck_sen base_sal heck_sal base_occ heck_occ {
     estimates restore `m'
@@ -273,31 +259,39 @@ foreach m in base_sen heck_sen base_sal heck_sal base_occ heck_occ {
 }
 file write fh _n
 
+* 标注 FE 结构
+file write fh "Occupation FE,Yes,,Yes,,Yes,,Yes,,Yes,,Yes," _n
+file write fh "Month FE,Yes,,Yes,,Yes,,Yes,,Yes,,Yes," _n
+
 file close fh
 di "=== Table 1 exported to $output/table1_mobility_regressions.csv ==="
+
+
+
+
+
+
+
+
+
 
 
 * ============================================================
 * Part 2: Extensive Margin
 * ============================================================
 
-gen byte post2 = post
-gen byte junior_post2 = is_junior * post2
-gen float ai_post2 = ai_exposure * post2
-gen float junior_ai_post2 = is_junior * ai_exposure * post2
-
 preserve
-drop if missing(post2)
+drop if missing(post) | missing(start_ym)
 
 * --- Table 4: 描述性 (appendix) ---
-quietly summarize ai_exposure, detail
+quietly summarize m1, detail
 gen byte ai_group = .
-replace ai_group = 1 if ai_exposure <= r(p25)
-replace ai_group = 2 if ai_exposure > r(p25) & ai_exposure <= r(p75)
-replace ai_group = 3 if ai_exposure > r(p75) & !missing(ai_exposure)
+replace ai_group = 1 if m1 <= r(p25)
+replace ai_group = 2 if m1 > r(p25) & m1 <= r(p75)
+replace ai_group = 3 if m1 > r(p75) & !missing(m1)
 
 collapse (mean) trans_rate = has_transition (count) n = has_transition, ///
-    by(is_junior ai_group post2)
+    by(is_junior ai_group post)
 export delimited using "$output/table4_transition_rates.csv", replace
 di "=== Table 4 exported ==="
 
@@ -305,19 +299,18 @@ restore
 
 * --- Table 2: Extensive margin regressions ---
 preserve
-drop if missing(post2)
+drop if missing(post) | missing(start_ym)
 
 * Col 1: Full sample
-reg has_transition is_junior ai_exposure post2 ///
-    junior_ai junior_post2 ai_post2 junior_ai_post2, ///
-    vce(cluster onet_code)
+reghdfe has_transition is_junior junior_ai junior_post ai_post junior_ai_post, ///
+    absorb(onet_code start_ym) cluster(onet_code)
 estimates store ext_full
 
-* Col 2: Robustness
+* Col 2: Robustness（排除 2024.7 后 position）
 gen byte not_too_recent = (startdate < td(01jul2024)) if !missing(startdate)
-reg has_transition is_junior ai_exposure post2 ///
-    junior_ai junior_post2 ai_post2 junior_ai_post2 ///
-    if not_too_recent == 1, vce(cluster onet_code)
+reghdfe has_transition is_junior junior_ai junior_post ai_post junior_ai_post ///
+    if not_too_recent == 1, ///
+    absorb(onet_code start_ym) cluster(onet_code)
 estimates store ext_robust
 
 estimates table ext_full ext_robust, b(%9.4f) se(%9.4f) stats(N r2)
@@ -327,7 +320,7 @@ capture file close fh
 file open fh using "$output/table2_extensive_margin.csv", write replace
 file write fh "Variable,Full_b,Full_se,Robust_b,Robust_se" _n
 
-local vars "is_junior ai_exposure post2 junior_ai junior_post2 ai_post2 junior_ai_post2"
+local vars "is_junior junior_ai junior_post ai_post junior_ai_post"
 foreach v of local vars {
     estimates restore ext_full
     local b1 = _b[`v']
@@ -342,20 +335,7 @@ foreach v of local vars {
     file write fh "`v'," %9.4f (`b1') "`st1'" "," %9.4f (`s1') "," %9.4f (`b2') "`st2'" "," %9.4f (`s2') _n
 }
 
-* Constant
-estimates restore ext_full
-local b1 = _b[_cons]
-local s1 = _se[_cons]
-get_stars `b1' `s1'
-local st1 = r(stars)
-estimates restore ext_robust
-local b2 = _b[_cons]
-local s2 = _se[_cons]
-get_stars `b2' `s2'
-local st2 = r(stars)
-file write fh "_cons," %9.4f (`b1') "`st1'" "," %9.4f (`s1') "," %9.4f (`b2') "`st2'" "," %9.4f (`s2') _n
-
-* N and R2
+* N 和 R2
 estimates restore ext_full
 local n1 = e(N)
 local r1 = e(r2)
@@ -364,6 +344,8 @@ local n2 = e(N)
 local r2val = e(r2)
 file write fh "N," %12.0fc (`n1') ",," %12.0fc (`n2') "," _n
 file write fh "R-squared," %9.4f (`r1') ",," %9.4f (`r2val') "," _n
+file write fh "Occupation FE,Yes,,Yes," _n
+file write fh "Month FE,Yes,,Yes," _n
 
 file close fh
 di "=== Table 2 exported to $output/table2_extensive_margin.csv ==="

@@ -59,5 +59,5 @@
 ) <tab:transition>
 
 #text(size: 8pt, style: "italic")[
-  _Notes:_ Dependent variable is an indicator for whether the worker transitions to a new position. Column (1) uses the full sample; column (2) excludes positions starting after 2024m6 to address right-censoring. All specifications are linear probability models with occupation and month fixed effects. Standard errors clustered at the O\*NET occupation level in parentheses. \*\*\* $p < 0.01$, \*\* $p < 0.05$, \* $p < 0.10$.
+  _Notes:_ Dependent variable is an indicator for whether the worker transitions to a new position. Column (1) uses the full sample; column (2) excludes positions starting after 2024m6 to assess censoring of recently started positions. All specifications are linear probability models with occupation and month fixed effects. Standard errors clustered at the O\*NET occupation level in parentheses. \*\*\* $p < 0.01$, \*\* $p < 0.05$, \* $p < 0.10$.
 ]

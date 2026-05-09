@@ -8,10 +8,9 @@ set more off
 
 * --- Step 0: 只加载必要变量，省内存 ---
 use user_id position_number startdate enddate seniority ///
-    ai_exposure high_ai salary onet_code rcid weight ///
+    m1 high_m1 salary onet_code company_id weight ///
     using "/Users/huangminxing/Documents/EC423_Essay/clean/positions_all.dta", clear
 
-di "原始数据: " _N " observations"
 
 * --- Step 1: 排序（后续所有 by 操作依赖此排序）---
 sort user_id position_number
@@ -21,8 +20,8 @@ sort user_id position_number
 * 规则1: position_number > 50 的用户
 by user_id: gen byte flag1 = (position_number[_N] > 50)
 
-* 规则3+4: seniority 或 ai_exposure 缺失
-gen byte _bad = (missing(seniority) | missing(ai_exposure))
+* 规则3+4: seniority 或 m1 缺失
+gen byte _bad = (missing(seniority) | missing(m1))
 by user_id: egen byte flag34 = max(_bad)
 drop _bad
 
@@ -45,7 +44,7 @@ di "规则1 (position_number > 50):"
 count if flag1
 di "规则2 (时间重叠):"
 count if flag2
-di "规则3+4 (seniority/ai_exposure 缺失):"
+di "规则3+4 (seniority/m1 缺失):"
 count if flag34
 di "规则5 (enddate < startdate):"
 count if flag5
@@ -80,15 +79,15 @@ gen byte is_junior = (seniority <= 2)
 
 * 下一个职位的特征
 by user_id: gen double next_seniority = seniority[_n+1]
-by user_id: gen float next_ai_exp = ai_exposure[_n+1]
+by user_id: gen float next_ai_exp = m1[_n+1]
 by user_id: gen long next_startdate = startdate[_n+1]
 by user_id: gen next_onet = onet_code[_n+1]
-by user_id: gen byte next_high_ai = high_ai[_n+1]
+by user_id: gen byte next_high_m1 = high_m1[_n+1]
 by user_id: gen double next_salary = salary[_n+1]
 
 * Transition outcome 变量
 gen delta_seniority = next_seniority - seniority
-gen delta_ai_exp = next_ai_exp - ai_exposure
+gen delta_ai_exp = next_ai_exp - m1
 gen occ_switch = (next_onet != onet_code) if next_onet != ""
 gen delta_salary = next_salary - salary
 *log salary 变化
