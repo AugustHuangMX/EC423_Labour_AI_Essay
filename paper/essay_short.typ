@@ -182,7 +182,7 @@ Each task type is produced as follows:
 
 $ y_L = A dot.c M + a_L dot.c n_J^L, quad y_H = b_H dot.c n_S, quad y_G = c dot.c n_J^G $ <eq-tasks>
 
-In task $L$, AI capital $M$ (rented at rate $r$) and junior labour $n_J^L$ are perfect substitutes, with $A$ denoting AI capability. This is the displacement channel. Task $H$ requires senior workers because it involves judgement and accumulated experience. This is the augmentation channel: AI raises the value of complementary high-expertise tasks. Task $G$ is junior-assigned support work; I abstract from senior production of $G$ because senior time has a higher return in task $H$.#footnote[This restriction is equivalent to assuming that the senior return in task $H$ exceeds the return seniors would obtain from generic support work. See @A2.]
+In task $L$, AI capital $M$ (rented at rate $r$) and junior labour $n_J^L$ are perfect substitutes, with $A$ denoting AI capability or cost-effectiveness in this task. This is the displacement channel. Task $H$ requires senior workers because it involves judgement and accumulated experience. This creates the augmentation channel: AI raises the value of complementary high-expertise tasks. Task $G$ is junior-assigned support work; I abstract from senior production of $G$ because senior time has a higher return in task $H$.#footnote[This restriction is equivalent to assuming that the senior return in task $H$ exceeds the return seniors would obtain from generic support work. See @A2.]
 
 Junior workers allocate their labour between tasks $L$ and $G$ subject to $n_J^L + n_J^G = n_J$. At the occupation level, labour supply responds to wages with constant elasticity:
 
@@ -192,13 +192,13 @@ where $epsilon > 0$ captures workers' ability to enter or exit the occupation in
 
 == Equilibrium and Comparative Statics
 
-The competitive firm's cost minimisation yields three conditions; full derivations are in @A1 and @A3:comparative.
+The competitive firm's first-order conditions, under an interior solution in which juniors remain active in tasks $L$ and $G$, yield three conditions; full derivations are in @A1 and @A3:comparative.
 
 _No-arbitrage in task $L$._ Since AI and junior labour are perfect substitutes, the firm employs both only when their unit costs are equalised:
 
 $ w_J = frac(a_L dot.c r, A) $ <eq-noarb>
 
-As AI capability $A$ rises, the junior wage $w_J$ falls.
+Holding the AI rental rate $r$ fixed, an increase in AI capability $A$ lowers the junior wage $w_J$.
 
 _Internal allocation of junior labour._ Equalizing the marginal revenue product of junior labour across tasks $L$ and $G$ yields $y_G slash y_L = gamma$, where $gamma equiv (beta_G c slash beta_L a_L)^sigma$ is independent of $A$.
 
@@ -206,13 +206,13 @@ _Senior augmentation via complementarity._ Senior wages satisfy:
 
 $ w_S = p dot.c beta_H lr((frac(Y, y_H)))^(1 / sigma) dot.c b_H $ <eq-senior>
 
-The term $(Y slash y_H)^(1 slash sigma)$ is the complementarity channel. Holding senior labour fixed, higher AI capability raises $y_L$ and total output $Y$, which increases the marginal revenue product of task $H$ and therefore $w_S$. The resulting rise in senior labour dampens but does not reverse this outward shift in senior demand.
+The term $(Y slash y_H)^(1 slash sigma)$ is the complementarity channel. Holding senior labour fixed, higher AI capability raises $y_L$ and total output $Y$, which increases the marginal revenue product of task $H$ and therefore $w_S$. The resulting rise in senior labour dampens but does not reverse this upward shift in senior demand.
 
-_Comparative statics._ A rise in $A$ lowers $w_J$ and, with elastic labour supply, reduces $n_J$. Within junior labour, workers move away from task $L$ toward task $G$, but total junior employment still falls. At the same time, the increase in $y_L$ raises senior marginal products through CES complementarity, increasing $w_S$ and $n_S$. The combined effect is a lower junior employment share. The net effect on total occupation-level employment remains ambiguous because the junior decline and senior increase work in opposite directions.
+_Comparative statics._ Locally around the interior solution, a rise in $A$ lowers $w_J$ and, with elastic labour supply, reduces $n_J$. Within junior labour, workers move away from task $L$ toward task $G$, but total junior employment still falls. At the same time, the increase in $y_L$ raises senior marginal products through CES complementarity, increasing $w_S$ and $n_S$. The combined effect is a lower junior employment share. The net effect on total occupation-level employment remains ambiguous because the junior decline and senior increase work in opposite directions.
 
 == Testable Predictions
 
-The static model formally delivers four implications:
+The static interior model formally delivers four implications:
 
 + *Compositional shift:* In occupations with higher AI exposure, the junior employment share declines following the AI shock, as junior workers are displaced from task $L$ and exit the occupation.
 + *Senior augmentation:* Senior workers in high-exposure occupations experience rising marginal products, wages, and labour demand through CES complementarity.
@@ -284,11 +284,11 @@ I separate the mobility analysis into an extensive margin and an intensive margi
 
 The extensive margin specification estimates a linear probability model of the form
 
-$ "Transition"_i = delta_1 "AI"_o times "Post"_i + delta_2 "Junior"_i times "AI"_o times "Post"_i + bold(X)_i' eta + alpha_o + gamma_(s(i)) + epsilon_i $ <eq:extensive>
+$ "Transition"_i = delta_1 "AI"_o times "Post"_i + delta_2 "Junior"_i times "AI"_o times "Post"_i + bold(X)'_i eta + alpha_o + gamma_(s(i)) + epsilon_i $ <eq:extensive>
 
 where $"Transition"_i$ equals one if origin-position observation $i$ is followed by another position; $bold(X)_i$ includes lower-order interactions; and $s(i)$ indexes the origin start month. The coefficient $delta_1$ captures the senior AI-exposure effect after ChatGPT, while $delta_2$ captures the additional junior effect. Conditional on transition, I estimate seniority gains using
 
-$ Delta "Seniority"_i = theta_1 "AI"_o times "Post"_i + theta_2 "Junior"_i times "AI"_o times "Post"_i + bold(X)_i' mu + alpha_o + gamma_(tau(i)) + u_i $ <eq:intensive>
+$ Delta "Seniority"_i = theta_1 "AI"_o times "Post"_i + theta_2 "Junior"_i times "AI"_o times "Post"_i + bold(X)'_i mu + alpha_o + gamma_(tau(i)) + u_i $ <eq:intensive>
 
 where $tau(i)$ is the transition month. I also use log salary change and occupation switching as intensive-margin outcomes.
 
@@ -336,7 +336,7 @@ This result is related to the firm-level evidence in #cite(<klein2025generative>
   caption: [Monthly junior share of new position starts by AI exposure group. Junior defined as seniority $<= 2$ (Revelio Labs classification). AI exposure median split at 0.366 (#cite(<GPTs_are_GPTs>, form: "prose")). Vertical dashed line marks ChatGPT release (November 2022).]
 ) <fig-junior-share>
 
-The pooled difference-in-differences estimate in @tab-pooled-did is $-0.096$ ($t=-8.71$). Thus, after ChatGPT, occupations with higher exposure experience a larger decline in the junior hiring share. A full-scale increase in exposure corresponds to a 9.6 percentage-point reduction.
+The pooled difference-in-differences estimate in @tab-pooled-did is $-0.096$. Thus, after ChatGPT, occupations with higher exposure experience a larger decline in the junior hiring share. A full-scale increase in exposure corresponds to a 9.6 percentage-point reduction.
 
 #figure(
   table(
@@ -405,7 +405,7 @@ This pattern is consistent with the model's junior-displacement logic, but the s
 
 Conditional on transition, @tab:mobility shows larger seniority gains for juniors leaving high-exposure occupations after ChatGPT. The baseline triple interaction is $0.122$, meaning that transitioning juniors in more exposed occupations move to higher-seniority roles relative to the comparison groups. The firm separation rate is a strong first-stage predictor of transition, and after Heckman correction the coefficient remains $0.125$. The inverse Mills ratio is negative ($-0.129$), which suggests negative selection on the outcome dimension: workers more likely to transition tend to have smaller seniority gains. The stability of the treatment coefficient is therefore more important than the exact corrected standard error, and it points toward genuine skill-upgrading among transitioning juniors.
 
-The salary and occupation-switching results are weaker. The triple interaction for log salary change is small and insignificant ($0.007$, $t=0.51$), even after controlling for seniority gains. The occupation-switching interaction is also small and insignificant ($-0.008$, $t=-0.61$). Thus, the post-ChatGPT adjustment appears mainly in hiring composition and seniority progression rather than in wage compression or occupational flight.
+The salary and occupation-switching results are weaker. The triple interaction for log salary change is small and insignificant ($0.007$), even after controlling for seniority gains. The occupation-switching interaction is also small and insignificant ($-0.008$). Thus, the post-ChatGPT adjustment appears mainly in hiring composition and seniority progression rather than in wage compression or occupational flight.
 
 The occupation-switching null is useful because it weighs against a simple story in which junior workers respond to AI exposure by leaving exposed occupations entirely. Instead, workers who move appear to remain in related occupational space while changing seniority level. This fits the idea that the early adjustment is within occupation, not only between occupations.
 
@@ -564,17 +564,29 @@ To characterize how task outputs respond to $A$, I reduce the model's dimensiona
 
 $ Y = lr([tilde(beta)_L y_L^((sigma - 1) / sigma) + beta_H y_H^((sigma - 1) / sigma)])^(sigma / (sigma - 1)) $ <eq-ces-reduced>
 
-In this reduced representation, the full marginal value of increasing $y_L$ includes the induced increase in $y_G = gamma y_L$. The shadow price of the effective low-expertise task bundle is therefore:
+In this reduced representation, increasing $y_L$ along the optimal path also requires increasing $y_G$ by $gamma$ units. The marginal value of the effective low-expertise bundle is therefore:
 
-$ p dot.c tilde(beta)_L lr((frac(Y, y_L)))^(1 / sigma) = frac(r, A) $
+$ p dot.c tilde(beta)_L lr((frac(Y, y_L)))^(1 / sigma) $
 
-This differs from the original three-task FOC in @eq-foc-m, where $beta_L$ captures the direct marginal value of AI-generated task $L$ output. Once the optimal relation $y_G = gamma y_L$ is imposed, $tilde(beta)_L$ captures the full marginal value of the combined low-expertise and generic task bundle. The condition implicitly defines the demand for $y_L$ as a function of $y_H$ and $A$. Holding $y_H$ fixed, an increase in $A$ reduces the effective marginal cost of task $L$ output ($r slash A$), which by CES demand raises $y_L$. Since $y_G = gamma y_L$, task $G$ output rises proportionally.
+The corresponding unit cost is not just the direct AI cost $r slash A$. One additional unit of $y_L$ can be produced by AI at cost $r slash A$, but maintaining $y_G = gamma y_L$ also requires $gamma slash c$ units of junior labour in task $G$, paid $w_J = a_L r slash A$. Hence the effective unit cost is:
+
+$ q_L (A) equiv frac(r, A) lr(1 + frac(a_L gamma, c)) $ <eq-effective-cost>
+
+The reduced first-order condition is:
+
+$ p dot.c tilde(beta)_L lr((frac(Y, y_L)))^(1 / sigma) = q_L (A) $ <eq-effective-foc>
+
+This condition is consistent with the original three-task FOCs. Since $gamma$ is defined by @eq-foc-njl and @eq-foc-njg,
+
+$ beta_G gamma^((sigma - 1) / sigma) = beta_L frac(a_L gamma, c), quad tilde(beta)_L = beta_L lr(1 + frac(a_L gamma, c)) $
+
+so @eq-effective-foc is exactly @eq-foc-m scaled up by the cost and value of the induced increase in task $G$. Holding $y_H$ fixed, an increase in $A$ lowers $q_L (A)$. Since CES marginal value is decreasing in $y_L$ for fixed $y_H$, the optimal $y_L$ rises. Since $y_G = gamma y_L$, task $G$ output rises proportionally.
 
 To verify that total output $Y$ rises: from @eq-ces-reduced, $Y$ is increasing in both $y_L$ and $y_H$. Since $y_L$ increases and $y_H$ is (initially) unchanged, $Y$ unambiguously increases.
 
 *Step 3: Senior augmentation*
 
-I establish that the demand curve for senior labour shifts outward when $A$ increases, and that the equilibrium senior wage and employment both rise.
+I establish that the senior wage schedule shifts upward when $A$ increases, and that the equilibrium senior wage and employment both rise.
 
 Define the inverse demand for senior labour, holding $A$ fixed:
 
@@ -582,19 +594,25 @@ $ w_S^D (n_S; A) equiv p dot.c beta_H lr((frac(Y(n_S, A), b_H n_S)))^(1 / sigma)
 
 where $Y(n_S, A)$ is total output evaluated at the optimal task allocation for given $n_S$ and $A$.
 
-*Claim 1: $w_S^D$ is decreasing in $n_S$*. An increase in $n_S$ raises $y_H = b_H n_S$ and hence $Y$. However, $y_H$ rises proportionally with $n_S$, while $Y$ exhibits diminishing returns to $y_H$ under the CES structure ($sigma < infinity$). Consequently, $Y slash (b_H n_S)$ falls, and so does $w_S^D$.
+For the comparative static, the key property is the shift in this schedule rather than strict downward slope. Under the maintained regularity that $w_S^D$ is weakly non-increasing in $n_S$ for fixed $A$--with equality possible under constant returns--an upward shift of this schedule raises both the equilibrium wage and employment of senior labour.
 
-*Claim 2: $w_S^D$ is increasing in $A$*. Holding $n_S$ fixed, an increase in $A$ reduces the marginal cost of task $L$, raising $y_L$ and $y_G = gamma y_L$. Since $y_H = b_H n_S$ is unchanged, $Y$ increases while $y_H$ does not, so $Y slash (b_H n_S)$ rises and $w_S^D$ rises.
+Holding $n_S$ fixed, an increase in $A$ lowers the effective unit cost $q_L (A)$, raising $y_L$ and $y_G = gamma y_L$. Since $y_H = b_H n_S$ is unchanged, total output $Y$ increases while $y_H$ does not. Therefore $Y slash y_H$ rises and so does the senior marginal revenue product:
 
-*Equilibrium effect.* The demand curve $w_S^D (n_S; A)$ is downward-sloping and shifts outward when $A$ rises. The supply curve $n_S = phi_S w_S^epsilon$ is upward-sloping. Standard comparative statics of supply-demand intersection imply that the new equilibrium features both higher $w_S$ and higher $n_S$:
+$ frac(partial w_S^D (n_S; A), partial A) > 0 quad "for fixed" n_S $
+
+The supply curve $n_S = phi_S w_S^epsilon$ is upward-sloping. The higher senior wage schedule therefore implies that the new interior equilibrium features both higher $w_S$ and higher $n_S$:
 
 $ frac(partial w_S, partial A) > 0, quad frac(partial n_S, partial A) > 0 $
 
-The increase in $n_S$ also raises $y_H = b_H n_S$ in equilibrium. This feedback lowers $Y slash y_H$ relative to the impact effect at fixed $n_S$, but it does not overturn the comparative static because the senior labour demand curve has shifted outward. This confirms the augmentation result: AI capability improvements raise senior wages and senior employment via CES task complementarity.
+The increase in $n_S$ also raises $y_H = b_H n_S$ in equilibrium. This feedback lowers $Y slash y_H$ relative to the impact effect at fixed $n_S$, but it does not overturn the comparative static because the senior wage schedule has shifted upward. This confirms the augmentation result: AI capability improvements raise senior wages and senior employment via CES task complementarity.
 
 *Step 4: Compositional shift*
 
-Define the junior employment share as $s_J equiv n_J slash (n_J + n_S)$. From Steps 1 and 3, $partial n_J slash partial A < 0$ and $partial n_S slash partial A > 0$. Both the numerator and denominator of $s_J$ are affected, the junior employment share unambiguously declines.
+Define the junior employment share as $s_J equiv n_J slash (n_J + n_S)$. From Steps 1 and 3, $partial n_J slash partial A < 0$ and $partial n_S slash partial A > 0$. For $n_J, n_S > 0$:
+
+$ frac(partial s_J, partial A) = frac(n_S dot.c partial n_J slash partial A - n_J dot.c partial n_S slash partial A, (n_J + n_S)^2) < 0 $
+
+The junior employment share therefore unambiguously declines.
 
 *Internal reallocation of junior labour*
 
